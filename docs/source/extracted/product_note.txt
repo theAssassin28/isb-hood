@@ -1,0 +1,23 @@
+ISB Hood: Product Note
+SWPM Study Group 12
+Problem
+ISB is a one-year program. Each batch leaves before it can pass on what it learned, so the next batch starts from zero. The knowledge that matters sits in WhatsApp groups, scattered docs and with seniors who are hard to reach once they graduate.
+Existing sources only give ratings. A map shows stars, not what to try or which nearby spots are worth it. A course outline shows the syllabus, not the workload, grading or which careers it actually helps. Alumni calls often feature people who never took the course or followed the career being discussed.
+Core idea
+ISB Hood is a place where each batch's knowledge is collected and passed on to the next: the truth behind just the ratings.
+Who it is for
+Users: ISB students, both the incoming batch settling in and the current batch making decisions through the year.
+Contributors: seniors and alumni who have already been through the places, courses and careers.
+What it covers
+Places and activities: cafes, food, sports spots and events near campus, what to try there, insider tips and honest opinions.
+Courses and faculty: what a course is really like, its workload, grading and class style, and which careers it helps.
+Career context: input from alumni who actually took the course or went into the career a student is planning.
+Procedures: how campus and admin processes actually work.
+Why people come back
+A places-only guide gets used once. Knowledge about courses, careers and procedures is needed all year, which gives students a reason to keep returning.
+To be finalized after user research
+Which knowledge gaps hurt most, and which ones the MVP covers first.
+Whether event discovery at nearby places is part of the product.
+MVP scope: a set number of places, or a set of features.
+How knowledge is collected from seniors and alumni.
+The metrics to evaluate success

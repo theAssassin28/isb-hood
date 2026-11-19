@@ -1,0 +1,827 @@
+
+===== Slide 1
+ISB Hood · Group 12
+SWPM – Problems, Solution hypothesis, MVP and prioritization
+ISB
+Software Product Management
+Indian School of Business, Hyderabad campus · November 2026
+INSTRUCTORS
+Prof Chandrashekhar V
+Group 12 · ISB Hood
+Sections A and B
+Team Members
+Shivam Singh (62610463), Chinmay Thakare (62610656), Rajashree Pati (62610751), Padarabinda Palai (62610513), Sri Akhil Mylavarapu (62610276)
+
+===== Slide 2
+ISB Hood at a glance
+2
+Each ISB batch leaves before it can pass on what it learned. We start with the two decisions where that hurts most.
+Item
+Draft: solution hypothesis, MVP and prioritization
+Scope
+Hyderabad campus only: all 20 interviews and both tests are with Hyderabad PGP and PGP YL students and their alumni
+Research base
+20 interviews by four members: 13 PGP Co'27, 4 PGP YL, 3 alumni. A mixed sample chosen for reach, not a survey
+Primary personas
+Elective Optimiser and Career Pivoter. Secondary: PGP YL junior. Supply side: senior or alum guide
+Strongest themes
+Course choice raised in 17 of 20 interviews; career prep in 12 (14 incl. passing mentions). Theme mentions, not campus prevalence
+Solution hypothesis
+Structured entries that must give a reason, show how many agree, and link to the author for follow-up questions
+MVP
+One core loop (write a structured entry, read it, ask the author). Test 1: course reviews. Test 2: career entries, a week later, own pass line
+Riskiest belief
+Seniors and alumni will write honest, structured entries when asked. If they don't, there is no product
+Pass lines
+Test 1: 40+ reviews, then 20%+ of 30+ surveyed readers name a bid they changed. Test 2: 10+ entries, then 30%+ of 20+ readers name an action they took
+
+===== Slide 3
+What are your Personas
+01
+
+===== Slide 4
+Personas
+4
+Two primary personas share one root cause: what one batch learns does not reach the next.
+Ananya Iyer, the Elective Optimiser   PRIMARY
+PGP Co'27, ex risk consultant, bids every elective term
+"It's still a complete black box as to which one to believe and which one not to." (Shaurya)
+Wants: Electives that fit this term's priority (grades, load, learning, career) with no surprise after bidding
+Hurts: Reviews conflict and give no reasons; outlines are polished; new or changed courses have no history; 2 to 3 hours the night before
+Uses today: Atrium outlines, ratings portal, 3 to 5 seniors, LLM on outlines
+Arjun Mehta, the Career Pivoter   PRIMARY
+PGP Co'27, ex CA in bank finance, switching to consulting or product
+"It's anchored on a set of people who already have that background, so it is difficult to actually pivot." (Riya)
+Wants: Land the target track; know what to do each term; decide which firms to apply to and which offer to take
+Hurts: Advice is generic and late; alumni don't reply; work culture known only to insiders; small MBA network
+Uses today: LinkedIn, Topmate, Reddit, CAS, alumni calls, student-built offers app
+Meera Das, the PGP YL Junior   SECONDARY
+PGP YL 2026 to 2028, first year, new to Hyderabad
+"Absolutely zero interaction between PGP and YL" outside events. (Yash)
+Wants: Learn what earlier batches know about courses and placements without depending on luck
+Hurts: Knowledge comes only through personal PGP contacts or an assigned buddy; quality of help varies
+Uses today: Senior buddy, cohort WhatsApp, PGP friends
+Rohan Kapoor, the Senior or Alum Guide   SUPPLY SIDE
+PGP Co'26 alum, now in a product role; answers juniors on WhatsApp
+"Usually, I am the person who responds to all of these... no one else does." (Yash)
+Wants: Help juniors take a useful next step; refer when the question is outside his experience
+Hurts: Same course questions again and again; requests outside his background; limited time
+Uses today: WhatsApp, LinkedIn, CAC alumni mapping, batch groups
+Names are fictional composites; quotes are verbatim from interviewees. Persona build-up on the next slide.
+
+===== Slide 5
+Where the personas come from
+5
+Four individual studies, 20 interviews, merged into four personas.
+20  interviews
+13  PGP Co'27 students
+4  PGP YL students
+3  alumni (Co'25, Co'26)
+Merged persona
+Shivam (5 PGP)
+Chinmay (1 PGP, 4 YL)
+Rajashree (5 PGP)
+Auro (2 PGP, 3 alumni)
+Elective Optimiser
+Ananya, Elective Optimiser
+PGP student in late terms (I4)
+Kavya, Balanced Explorer (course side)
+Palash, balancing learning and placements
+Career Pivoter
+Karan, Career Pivoter
+Same PGP student, placement timing
+Arjun, Career Pivoter
+Paulami, reassessing career fit
+PGP YL Junior
+Rahul, New Arrival (settling in)
+Yash (founding YL), Anusha (second YL)
+Not covered
+Not covered
+Senior or Alum Guide
+Seniors seen from the student side
+Yash answers the batch's questions
+Not covered
+Pranay, Raaghav, Swayam as advisers
+Dropped as persona
+Places-only user (weak)
+Food and places (mild)
+Kavya's outings side (3 of 5, mild)
+Venue discovery (no evidence)
+Per-interviewee theme matrix and source links in the appendix (slides 23 and 24).
+
+===== Slide 6
+JTBD
+02
+
+===== Slide 7
+JTBD
+7
+Five jobs. The first two are frequent and painful; the fifth is what keeps supply alive.
+#
+Job statement (When..., I want to..., so I can...)
+Persona
+Functional / Emotional / Social
+Heard in
+J1
+When elective bidding opens each term, I want to know a course's real workload, grading and teaching style from people like me, so I can bid for a mix that fits this term's priority and not get locked into one I regret.
+Elective Optimiser, YL Junior
+Pick courses and bid points / no regret: "super annoyed, frustrated, angered" (Pallavi) / confidence when peers take it too (Vishva)
+17 of 20
+J2
+When I plan a switch into a new track, I want the term-by-term path, real numbers and what mattered from someone who made the same move from my background, so I start the right prep on time.
+Career Pivoter
+Plan prep by term / not starting late: "leaves people with a lot of regret" (Arnav) / credible story to recruiters
+12 of 20 (14 incl. passing)
+J3
+When a company opens applications or I hold two offers, I want insider facts on the role, process and culture, so I can decide whether to apply or which offer to take.
+Career Pivoter
+Apply or skip, compare offers / less guessing / choose a team peers respect
+Aganya, Sneha, Vishva, Riya
+J4
+When an entry does not cover my situation, I want to ask the person who wrote it, so I get an answer for my case without cold-messaging.
+All readers
+Resolve one doubt / reassurance ("am I too late?") / no awkward cold outreach
+Aganya, Ashish, Vishva, Pranjal
+J5
+When juniors ask me the same course or career question, I want to answer once in a way that keeps helping, so I help without repeating myself.
+Senior or Alum Guide
+Answer or refer / feel useful / be seen as a helpful senior
+Pranay, Yash, Raaghav
+Out of MVP: settling in and procedures (9 of 20, early-term), places and food (10 of 20, mild). Counts are theme mentions in a mixed sample of 20.
+
+===== Slide 8
+List of problems that your Personas / JTBD are uncovering ?
+03
+
+===== Slide 9
+Problems that your prospects are facing
+9
+Each problem has a person, a moment, an obstacle, a cost with a number and a workaround.
+Problem
+Who, and when
+Trying to
+Obstacle
+Cost (number)
+Workaround today
+P1 Electives
+PGP students from the first elective term, the evening before bidding closes
+Pick 4 courses and split bid points
+Reviews are 1 or 2 opinions with no reasons; outlines hide load and sub-assignments; profs and formats change
+2 to 3 hours per round (Riya); 16 to 20 options, 6 to 7 factors (I4, Palash); locked in once wrong; half a mark can drop a grade (Shaurya)
+Ask 3 to 5 seniors (Sneha); outlines into an LLM (Vatsal); sit in on a lecture
+P2 Career
+Career pivoters from Term 3 into placement season
+Plan prep and decide on firms and offers
+Advice is generic and anchored on people who already have the background; facts on firms sit with insiders
+Senior calls last 5 to 10 min (Aganya); alumni emails go unanswered (Vishva); workshop a week before shortlists (I4); 8 shortlists down to 2 (Pranay)
+LinkedIn cold messages, Topmate, Reddit, alumni of other B-schools, offers app
+P3 Handoff
+PGP YL first-years with no seniors in their programme
+Learn what earlier batches know
+PGP and YL rarely meet; help depends on buddy luck
+Founding YL cohort had no faculty reviews at all (Yash); one first-year explored alone for ~5 months (I2)
+Personal PGP friends, senior buddy
+P4 Supply
+Seniors and alumni who get the same questions
+Help juniors without repeating
+No place to answer once; questions outside their experience
+Repeated course advice frustrates (Pranay); one student answers all Atrium questions (Yash)
+WhatsApp replies, referrals to other alumni
+Problem hypothesis 1: PGP students bidding for electives are most frustrated about choosing courses that fit their priority for the term, because the advice they get is a few opinions with no reasons that go stale when a professor or format changes.
+
+===== Slide 10
+How big and how often
+10
+Electives and career prep are frequent and painful. Places are frequent but mild, so they wait.
+Rare and painful
+Frequent and painful
+Rare and mild
+Frequent and mild
+Severity
+Frequency for one student
+P1 Electives
+P2 Career
+P3 YL handoff
+P4 Supply
+Settling in
+Places, food
+Events
+Bottom-up
+P1 Electives
+P2 Career
+People with it
+~400 PGP students on the Hyderabad campus bid every elective term (interviewee figure, to confirm)
+Career pivoters: 6 of 10 PGP students in Shivam's and Rajashree's samples (not a campus estimate)
+How often
+Every elective term; 16 to 20 options each round
+Weekly to daily in placement season; peaks twice a year (U-curve, Aganya)
+Cost each time
+2 to 3 hours of reading plus 3 to 5 senior calls
+5 to 10 minutes per senior call; many cold messages unanswered
+Rough size
+400 x 2.5 h = ~1,000 student-hours per bidding round per campus
+Not sized in hours; cost shows as late starts and lost shortlists
+Reachable in the test?
+Yes: Term 7 bidding, 4 to 10 Jan 2027
+Yes: placement decisions are still live
+Theme counts are mentions in a mixed, non-random sample of 20, not population prevalence. Hours are self-reported by one or two people: order of magnitude only.
+
+===== Slide 11
+What do they do today ?
+04
+
+===== Slide 12
+Current Solutions / Competitors / Existing behaviors
+12
+Students already stitch together 8+ sources. Nothing consolidates them or keeps them past one batch.
+What they use today
+What it does well
+Where it fails (evidence)
+Atrium course outlines
+Official content and evaluation
+"Written in a very polished manner" (Pallavi); one assignment hides 4 to 5 sub-parts (Riya)
+Course and faculty ratings portal
+One score per course
+No reasons; same course rated well in Mohali, badly in Hyderabad (I4)
+Seniors and alumni (calls, WhatsApp)
+Trusted, personal
+1 or 2 opinions; 5 to 10 minutes; ~30 seniors for 400 in O-Week; depends on who you know (I2)
+Alumni portal, CAC alum mapping, buddies
+Assigned contact
+Low reply rates (Vishva); "very hands off" (Shaurya); quality varies by buddy (Anusha)
+LinkedIn, Topmate, Reddit
+Reach beyond ISB
+Cold, generic, not ISB-specific; paid sessions
+ASA/AAC sessions, CAS
+Structured, official
+One-time and generic; comes late (modelling workshop a week before shortlists)
+LLMs on outlines and the bidding PDF
+Fast summary
+Only as good as the outline; no lived experience
+Course repositories, WhatsApp groups, offers app
+Peer-made, free
+Half-filled and stale (Arnav); messages lost in noise (Pranjal); offers without context
+Where ISB Hood is different
+Reasons, not ratings: every entry answers fixed questions and says why
+Many voices: shows how many reviewers agree
+Dated: professor and term on every entry; new or changed courses flagged
+Matched: filter by pre-MBA background and target track
+Reachable: ask the author under the entry
+Lasts: survives the batch that wrote it
+
+===== Slide 13
+Your value proposition 
+05
+
+===== Slide 14
+Your value proposition
+14
+Value map (what we offer) against the customer profile of our two primary personas.
+Products and services
+Structured course reviews by professor and term
+Career playbooks and company notes by background
+Ask-the-author comments on every entry
+Pain relievers
+A reason is required; star-only reviews are not accepted
+Agreement shown across reviewers, not one opinion
+Stale or new courses flagged before you bid
+Gain creators
+"People like me" filter on background and track
+Term-by-term path with real numbers
+A reply from the author, kept public for the next student
+Customer jobs
+Choose electives and bid points each term (J1)
+Plan a career switch term by term (J2)
+Decide on firms and offers (J3)
+Pains
+Conflicting reviews with no reasons
+Advice anchored on others' backgrounds
+Seniors busy; alumni don't reply; info arrives late
+Gains
+Know workload, grading and teaching style before bidding
+Know what to do this term to reach a track
+An answer for my case, from someone who did it
+FIT
+Value proposition: For ISB students choosing electives or planning a career move, ISB Hood is the record of what earlier batches learned, with reasons, matched to your background, and the author one comment away. Unlike ratings or a 10-minute senior call, every entry says why and shows how many agree.
+
+===== Slide 15
+Solutions we explored before choosing one
+15
+Eight ideas scored on criteria written before the options. One wins; two parts carry forward.
+Idea
+Lifts P1 or P2
+Testable in 3 weeks with real users
+No new habit needed
+No ISB system access needed
+Verdict
+Structured entries + ask the author
+Yes
+Yes
+Yes: replaces asking seniors
+Yes (content rules agreed with AAC/ASA)
+Chosen
+Alumni office-hours booking
+Partly
+Yes
+Yes
+Yes
+Out: 5 to 10 min per call does not scale or persist
+AI bidding assistant on outlines
+Partly
+Yes
+Yes
+Yes
+Out: outlines are the problem; later as a summary layer
+Course and track WhatsApp communities
+Partly
+Yes
+Yes
+Yes
+Out: answers get lost in noise (Pranjal)
+Wiki / shared repository
+Partly
+Yes
+No
+Yes
+Out: exists already, half-filled, no author link
+Background-matched buddy finder
+Partly
+Yes
+Yes
+Yes
+Carried forward as P1 people finder
+Past placement outcomes dashboard
+Partly
+No
+Yes
+No
+Out: data sensitivity; app already exists
+Lecture-sampling calendar
+Partly
+No
+Yes
+No
+Out: needs faculty and timetable data
+Method from Session 3: diverge, then score against criteria set first. 'System access' means ISB data or integrations; agreeing moderation rules with AAC/ASA is still required.
+
+===== Slide 16
+Solution hypotheses
+16
+We believe [concept] will solve [problem] for [customer] while they are [doing this job].
+SH1
+We believe structured course reviews that require a reason and show professor, term and agreement will solve conflicting, reasonless, stale course advice for PGP students (and later YL students) while they are choosing electives and placing bids.
+Wrong if: Under 20% of 30+ surveyed readers name a bid they changed; most still call 3 to 5 seniors
+SH2
+We believe track playbooks and company notes from people who made the same move, filterable by background will solve generic, late career advice for career-pivoting PGP students while they are planning prep and deciding on firms and offers.
+Wrong if: Under 30% of 20+ career readers name a concrete action (applied, skipped, changed prep, offer choice)
+SH3
+We believe an ask-the-author comment thread on every entry will solve short senior calls and unanswered alumni messages for students with a doubt specific to them while they are acting on an entry.
+Wrong if: Under 70% of questions answered within 48 hours
+SH4
+We believe a 5-minute structured form sent at term end and after placements, with credit will solve answering the same questions again and again for seniors and alumni who already help juniors while they are advising juniors.
+Wrong if: Under 20 contributors or 40 reviews in 10 days
+SH5
+We believe the same entries, opened to the PGP YL cohort will solve no seniors in their own programme for PGP YL first-years while they are choosing courses and preparing for placements.
+Wrong if: Under 30 YL sign-ups; YL readers find PGP entries irrelevant
+
+===== Slide 17
+Riskiest assumptions and how we validate them
+17
+Supply is the one that would end it. We test it first; the rest get a check, not an experiment.
+Test this one
+Already covered
+Don't bother
+Safe: build
+Fatal if wrong
+Our confidence →
+A1 Supply
+A10 Alumni access
+A2 Trust
+A4 Replies
+A6 ISB admin
+A3 Changes bids
+A5 Career helps
+A7 YL relevance
+A8 Freshness
+A9 Buildable
+Assumption
+Test
+Rung
+Pass line
+A1 Seniors and alumni write honest, structured entries
+Contribution drive by form link
+Gave time
+Courses: 40+ reviews from 20+ people. Career: 10+ entries
+A10 Alumni can sign in to contribute
+5 alumni try it in week 1
+Did
+5 of 5 publish; else open contributor sign-in to any Google account, verified by us
+A3 Entries change bids
+Post-bid survey, n of 30+
+Said, specific
+20%+ name a course whose bid they changed
+A5 Career entries lead to action
+2-week follow-up, n of 20+
+Said, specific
+30%+ name an action taken
+A4 Authors answer follow-ups
+Comments with email alert
+Gave time
+70%+ answered in 48 h
+A7 YL juniors find it relevant
+Open to YL; count questions
+Gave data
+30+ YL sign-ups, 10+ questions
+A6 ISB admin accepts faculty reviews
+Meet AAC/ASA before launch
+n/a
+No objection; rules agreed
+Evidence ladder (Session 3): said, used, gave time, gave data, paid. Asking for a named course or action makes 'said' more specific, but it is still self-report.
+
+===== Slide 18
+MVP
+06
+
+===== Slide 19
+MVP: what it is, why each part is in, what is minimum
+19
+One core loop, two tests run one after the other. Courses first; career a week later with its own pass line.
+Test 1: Courses (primary)
+Belief: alumni and seniors write course reviews; Co'27 changes a Term 7 bid because of one
+Built: review form, course page, comments, sign-in, events
+Pass: 40+ reviews from 20+ people; 20%+ of 30+ surveyed readers name a changed bid
+Test 2: Career (starts a week later)
+Belief: people who made a move write it down; a reader acts on it
+Added: playbook and company-note forms on the same entry template, track and 'like me' filter
+Pass: 10+ entries; 30%+ of 20+ readers name an action they took
+Why test career now, not next term
+Placement season is live; the same decision will not come back for Co'27
+Co'27 and Co'26 career memories are freshest now; one outreach asks for both
+Re-uses Test 1's form, page and comments: about 1 day of extra build
+It starts only after Test 1 has 50%+ of its supply target, so course results come first and stay readable on their own
+What is minimum about it
+One entry template, two content types
+Public comments only; chat and people finder are fake-door buttons that count clicks
+One filter that matters per module
+Moderation is us, by hand, from a flag list
+No AI, places, events or mobile app
+Hosted auth and database; seeded by our own outreach
+Why 'one core loop' and not 'single feature': reviews, career entries, filters and comments are parts of one loop (write, read, ask). If any part is missing, we cannot tell whether the loop works.
+MVP shape 05 from Session 4 (single feature, built properly). Full requirements in the separate MVP document.
+
+===== Slide 20
+MVP feature prioritization
+20
+P0 = needed to run Test 1 or Test 2. Bigger features are fake doors until their own evidence arrives.
+Feature
+Priority
+Interviews raising it
+Belief it tests
+Effort
+Why this priority
+F1 Structured course review form
+P0, Test 1
+17 of 20
+A1 supply
+M
+Without entries there is nothing to read
+F2 Course page: summary, agreement, prof/term, 'new or changed' flag
+P0, Test 1
+17 of 20
+A3
+M
+Core reader value for J1
+F5 Ask-the-author comments with email alert
+P0, Test 1
+5 asked for it
+A4
+S
+Covers doubts an entry cannot
+F6 Sign-in (ISB email for readers; verified Google for alumni)
+P0, Test 1
+n/a
+A10, trust
+S
+Alumni may not keep ISB email access
+F7 Events, post-bid survey, career follow-up
+P0, both
+n/a
+All
+S
+Week-3 data cannot be added later
+F3 Career entries: playbook + company note
+P0, Test 2
+12 of 20
+A1, A5
+S
+Same template as F1, new fields
+F4 Career filter: track and 'like me' background
+P0, Test 2
+12 of 20
+A5
+S
+Advice anchored on others' backgrounds
+F8a/F9a Fake doors: 'Request a chat', 'Find people like me'
+P0, both
+5 / 13 of 20
+Demand for F8, F9
+S
+Collects the evidence F8 and F9 need
+F8 Private chat with author (opt-in, capped)
+P1, gated
+5 asked for it
+A4
+M
+Build only if its fake door passes
+F9 People finder by background, course, move
+P1, gated
+13 of 20
+A5
+M
+Build only if its fake door passes
+F10 Bidding rules guide; term-by-term calendar
+P1
+Vishva; Chinmay I1, I4
+n/a
+S/M
+Content, not product; needs CAS dates
+F11 AI summary; F12 places, events, first-term guide
+P2
+Vatsal; 10, 0, 9 of 20
+n/a
+M
+Need 3+ reviews per course; pains are mild
+Effort: S under 1 day, M 1 to 3 days with an AI build tool. Interview counts are theme mentions (appendix, slide 23), not prevalence.
+
+===== Slide 21
+How we will read the MVP
+21
+Separate pass lines per test, minimum samples, and a decision for every band, written before we build.
+Test 1: Courses
+Test 2: Career
+Writers / readers
+Co'26 alumni and Co'27 write; Co'27 (Term 7 bids) and PGP YL read
+Co'27 and Co'26 write; Co'27 in placements and PGP YL read
+Window
+Term 7 bidding in week 3 of Term 6: 4 to 10 Jan 2027. Survey 11 to 17 Jan
+Readers from 28 Dec; follow-up 2 weeks after first visit, by 24 Jan
+Supply pass
+40+ reviews, 20+ people, 10+ Term 7 courses with 3+ reviews, by 3 Jan
+10+ entries: 5+ playbooks across 3+ tracks, 5+ company notes
+Outcome measure
+Post-bid survey, min. 30 responses: changed (name the course) / confirmed / no effect / did not use
+2-week follow-up, min. 20 responses: name one action (applied or skipped a firm, changed prep, chose an offer, contacted author)
+Pass
+Changed 20%+. 'Confirmed' is reported, not counted
+30%+ name a concrete action
+Value event
+Viewed a course page with 3+ reviews
+Viewed a career entry matching own track or background
+Same for both tests
+Arrived: profile completed. Came back: a session on a later calendar day in which at least one entry is viewed. Follow-ups: 70%+ of comments answered in 48 h. Under the minimum sample = inconclusive: extend the survey, do not decide.
+Limit: we cannot see real bids or shortlists. Naming the course or action makes self-report specific and checkable, but it is not observed behaviour.
+Result
+Decision
+Supply under 50%
+Stop building; concierge: we interview seniors and write entries
+Supply 50 to 99%
+One more 5-day drive (shorter form, named asks per course); then open only courses or tracks with 3+ entries
+Supply 100%+
+Open to readers; read outcome
+Changed under 10%
+Rethink format
+Changed 10 to 19%
+Iterate (comparison view, fewer fields); retest next bid
+Changed 20%+
+Continue; widen to all of Co'27 and PGP YL
+Chat, people finder
+Only if own fake door gets 15%+ click-through from readers of entries (career readers for F9)
+
+===== Slide 22
+Goals and Non-Goals for your MVP
+22
+P0 goals must be met in MVP1. Non-goals are decisions, written down, not things we ran out of time for.
+P0 goals
+Course supply: 40+ reviews from 20+ contributors before Term 7 bidding (4 Jan 2027)
+Course outcome: 20%+ of 30+ surveyed readers name a bid they changed
+Career supply: 10+ entries across 3+ tracks
+Career outcome: 30%+ of 20+ readers name an action taken
+Follow-ups: 70%+ answered in 48 hours; all events logged from day one
+P1 goals
+YL: 30+ PGP YL sign-ups and 10+ questions to Co'27 authors
+Retention: 25%+ of readers come back on a later day and read an entry
+Coverage: 50%+ of Term 7 electives with 3+ reviews
+Evidence for F8 and F9: fake-door click-through measured
+Non-goal
+Why not now
+Places, food and events
+Mild pain; friends and apps already work
+First-term and admin guide
+Pain is real but early-term; next batch arrives later
+AI recommendations or bid optimiser
+Needs data we do not have yet
+Private chat, people finder
+Fake doors first; build on evidence
+Mobile app, push alerts
+Web link in WhatsApp is enough to test
+Salary or offer amounts
+Sensitive; outside what we need to learn
+Feedback channel to ISB admin
+Different job (Vishva); needs admin
+Mohali campus
+Scope is Hyderabad only
+Trust and ethics guardrails (Session 5)
+Review the course, not the person: no personal remarks about faculty; flagged entries checked within 24 hours
+Readers see 'verified Co'26' when an author stays anonymous; moderators can see who wrote it
+Authors can edit or delete their entries at any time; no grades or salaries are collected
+
+===== Slide 23
+Appendix: theme matrix by interviewee
+23
+Every count in this deck adds up from this table. Each mark points to a cluster or evidence ID in the original submission.
+Interviewee
+C1
+C2
+C3
+C4
+C5
+C6
+C7
+C8
+Where to check
+Arnav (Sh)
+●
+●
+●
+●
+A, C, D, E
+Ashish Sood (Sh)
+●
+●
+●
+●
+A, D, E, F
+Sneha (Sh)
+●
+●
+●
+●
+A, C, D, E, G
+Vatsal Agarwal (Sh)
+●
+●
+●
+●
+A, E, F, G
+Aganya (Sh)
+●
+●
+●
+C, D, E
+Vanshika (YL) (Ch)
+●
+●
+●
+●
+●
+●
+●
+I1 in all rows
+Redacted (YL) (Ch)
+●
+●
+●
+●
+●
+I2
+Yash Jain (YL) (Ch)
+●
+●
+●
+●
+●
+●
+I3
+Redacted (PGP) (Ch)
+●
+●
+●
+●
+●
+I4
+Anusha (YL) (Ch)
+●
+●
+●
+●
+I5
+Interviewee
+C1
+C2
+C3
+C4
+C5
+C6
+C7
+C8
+Where to check
+Riya (Ra)
+●
+●
+●
+H1, H2, H3
+Pallavi (Ra)
+●
+●
+●
+H1, H3, H4
+Shaurya (Ra)
+●
+●
+●
+●
+H1, H2, H3; network thin
+Pranjal (Ra)
+●
+●
+●
+H1, H3, H4
+Vishva (Ra)
+●
+●
+●
+●
+●
+H1 to H4; network thin
+Palashjyoti Kalita (Au)
+●
+●
+PA1 to PA5
+Paulami Sengupta (Au)
+●
+●
+PO1, PO2, PO6
+Pranay Mandar (alum) (Au)
+●
+●
+●
+●
+PR1 to PR5
+Raaghav Agarwal (alum) (Au)
+●
+●
+RA1, RA3
+Swayam Pal (alum) (Au)
+SW1, SW2 (advice only)
+Total of 20
+17
+12
+13
+9
+7
+10
+4
+2
+Themes: C1 course and elective choice, C2 career prep and decisions, C3 finding the right person, C4 settling in and procedures, C5 term-by-term view of what is coming, C6 places, food and outings, C7 PGP to YL handoff, C8 repeated questions (supply side). Researchers: Sh Shivam, Ch Chinmay, Ra Rajashree, Au Auro (Padarabinda Palai). Sources: Shivam theme letters A to G; Chinmay interview numbers I1 to I5; Rajashree hypotheses H1 to H4; Auro evidence IDs.
+C2 counts main themes only (Rajashree's Pallavi and Pranjal mention careers in passing: 14 with them). Chinmay's 'Timing' cluster feeds C2 and C5. Swayam's notes are advice to others, so no marks.
+
+===== Slide 24
+Appendix: sources and how to audit the counts
+24
+Original submissions, recordings and affinity diagrams. Links point to the team's ISB Hood folder.
+Researcher
+Submission (Assignment 1)
+Affinity diagram
+Transcripts
+Recordings folder
+Shivam Singh
+SWPM_Assignment1_Personas_Problem_Hypotheses_Shivam_Singh.pdf
+App. A.1: themes A to G + interviewee table
+App. A.2, marked P/J/G/Q
+Open folder
+Chinmay Thakare
+Assignment_1_Personas.pdf
+App. A.1.4: 6 themes with interview numbers
+App. A.1.3
+Open folder
+Rajashree Pati
+Assignment1_SWPM_Rajashree.pdf
+App. A.1.4: 10 clusters + A.2 coded quotes
+App. A.1.3, timestamped
+Open folder
+Padarabinda Palai (Auro)
+Auro - Assignment 1.pdf
+App. A.1.3 + evidence index (PA, PO, PR, RA, SW)
+Linked folder; Raaghav audio lost
+Open folder
+All four
+ISB Hood shared folder: every interview recording and transcript
+Open folder
+How the counts were made
+Each member coded their own transcripts (P, J, G, Q) and built an affinity diagram
+We mapped each member's clusters onto 8 shared themes (slide 23); a mark means the theme was a main point for that person
+Two members used Claude or Gemini for transcription and first-pass coding; clusters were checked against quotes
+What the counts are not
+Theme mentions in a mixed, non-random sample of 20 (13 PGP, 4 YL, 3 alumni), recruited through our own networks
+Not population prevalence: '17 of 20' does not mean 85% of the batch has the problem
+Interviewers sometimes pitched the idea first (noted by Auro); alumni speak about others, so their marks are weaker evidence

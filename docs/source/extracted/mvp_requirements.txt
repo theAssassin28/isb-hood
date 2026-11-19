@@ -1,0 +1,271 @@
+ISB Hood MVP: Requirements Document
+Group 12, SWPM Term 5 · Draft v0.2 · Hyderabad campus only · Companion to the Solution Hypothesis, MVP and Prioritization deck · Items marked [confirm] need a team decision or a fact we have not checked
+1. Purpose
+ISB Hood passes what one ISB batch learns about courses and careers to the next. This MVP is an experiment, not a small version of the product. It exists to answer one question:
+Shape: one core loop (write a structured entry, read it, ask the author), run as two tests in sequence. Every part of the loop is needed: without any one of them we cannot tell whether the loop works.Test 1, Courses (primary): alumni and seniors write course reviews, and Co'27 students change a Term 7 bid because of one.Test 2, Career (one week later): people who made a career move write it down, and readers act on it. It runs now, not next term, because placement season is live, the same contributors are being contacted anyway, and it reuses Test 1's form, page and comments (about one extra day of build). It starts only once Test 1 has 50% of its supply target, so course results stay readable on their own.Pass lines and decisions: section 9.
+2. Users and roles
+Role
+Who
+What they do in the MVP
+Reader
+PGP Co'27 students and PGP YL students, Hyderabad campus
+Browse courses and career entries, filter by background, ask the author
+Contributor
+Co'26 and Co'25 alumni; Co'27 students for courses and placements they have finished
+Write course reviews and career entries; answer comments
+Moderator
+Group 12 members
+Approve flagged entries, apply the content rules, see real author names
+One account can be both reader and contributor. Alumni may no longer have ISB email access, so contributors sign in differently (F6).
+3. Scope
+In (P0)
+ID
+Feature
+Why it is in
+F1
+Structured course review form (Test 1)
+Tests supply (A1). Course choice was a main theme in 17 of 20 interviews (theme mentions in a mixed sample, not prevalence)
+F2
+Course page with aggregated summary (Test 1)
+Tests demand (A2, A3). Core reader value
+F3
+Career entries: track playbook and company note (Test 2)
+Second strongest theme (12 of 20 as a main theme, 14 with passing mentions); placement season is live
+F4
+Career filter by track and pre-MBA background (Test 2)
+Advice anchored on other people's backgrounds is the main career obstacle
+F5
+Ask-the-author comments with email alert
+Covers doubts an entry cannot; tests reply rates (A4)
+F6
+Sign-in and short profile
+Readers: ISB email. Contributors: any Google account, entry published only after a moderator matches the name to our outreach list (tests A10 in week 1)
+F8a, F9a
+Fake-door buttons: "Request a chat", "Find people like me"
+Collect the evidence that full chat (F8) and a people finder (F9) need before either is built
+F7
+Event logging and post-bid survey
+Data that is not logged in week 1 cannot be recovered
+Later (P1, P2)
+F8 request-to-chat with author and F9 people finder, each built only if its fake door passes (section 9); F10 bidding rules guide and term-by-term calendar, F11 AI summary of reviews, F12 places, events and first-term guide.
+Out (non-goals for this release)
+Places, food and events; first-term admin guide; AI recommendations or bid optimiser; private chat; mobile app and push alerts; salary or offer amounts; a feedback channel to ISB administration; Mohali campus.
+4. User stories and acceptance criteria
+Reader
+Story
+Acceptance criteria
+As a student bidding for electives, I want to see what a course is really like so I can bid with fewer surprises
+Course page shows: review count; median weekly workload; evaluation mix; quant-to-qual score; grade-risk split; learning value with agreement level; share who said the outline matched; top 3 "who should take it" and "who should skip it" lines; professor and term on every review
+As a reader, I want to know if reviews still apply
+If the current professor differs from the reviewed one, or the course has no reviews, the page shows a "New or changed course" banner
+As a career pivoter, I want to read entries from people with my background
+Career list can be filtered by target track and pre-MBA background; a "Like me" toggle applies the reader's own profile background
+As a reader with a follow-up doubt, I want to ask the author
+Any signed-in user can post a comment under an entry; the author gets an email within 5 minutes; replies are public and threaded
+As a reader, I want to filter courses
+Course list filters: term offered, workload band, quant or qual, track it helps; sort by review count or learning value
+Contributor
+Story
+Acceptance criteria
+As an alum, I want to review a course in about 5 minutes
+Form opens from a link with the course preselected; under 15 fields; progress saved; median completion time logged
+As a contributor, I want to control how I appear
+Choose "Show my name" or "Verified Co'26 student". Moderators always see the real name
+As an author, I want to answer questions without being flooded
+Email alert per new comment, with a daily digest option; one-click link to reply
+As an author, I want to fix or remove what I wrote
+Edit and delete available on own entries at any time
+5. Content specifications
+5.1 Course review (F1)
+Field
+Input
+Rule
+Course, professor, term taken
+Select; professor and term from the offering
+Required
+Why you took it
+Multi-select: career fit, interest, professor, grades, workload, friends, concentration credit
+Required
+Weekly workload outside class
+0-2, 2-4, 4-6, 6+ hours
+Required
+Evaluation mix
+Percent: class participation, quizzes, individual work, group work, mid-term, final
+Should total 100
+What the outline did not tell you
+Text
+Required, 40+ characters
+Quant or qual
+1 (fully qual) to 5 (fully quant)
+Required
+Teaching style
+Multi-select: case discussion, lecture, workshop, guest-heavy, project
+Required
+Grade risk
+Low, medium, high, plus reason
+Reason required
+Learning value
+1 to 5, plus reason
+Reason required, 40+ characters
+Careers it helps
+Multi-select tracks
+Optional
+Who should take it / who should skip it
+Two short texts
+At least one required
+Did the outline match the course?
+Yes, partly, no
+Required
+Visibility; open to questions
+Toggle; default "open to questions"
+Required
+Agreement level on the course page: High if 70%+ of learning-value ratings sit within one point of the median, Mixed otherwise. Hidden until 3 reviews exist; below 3, the page says "Too few reviews to show agreement".
+5.2 Track playbook (F3)
+Field
+Input
+From
+Pre-MBA function, industry, years of experience
+To
+Track (consulting, product, finance, general management or strategy, marketing, other), role, company type; company name optional
+Path by stage
+What you did before ISB, in early terms, mid terms, late terms and in placement weeks (term buckets [confirm] against the PGP calendar)
+Numbers
+Firms applied to, shortlists, interviews, offers (ranges allowed)
+What mattered most
+Pick up to 3: CV story, GPA, case or interview prep, networking, competitions, PORs, prior domain, courses; plus why
+Courses that helped
+Links to course pages
+Latest safe start and mistakes to avoid
+Two short texts (answers "am I too late?")
+5.3 Company note (F3)
+Company, role, year; process and rounds; what was asked; prep that worked; work culture and team (only for people who joined or interned there); would you recommend it, and to whom. No salary or offer amounts.
+6. Screens
+Sign in: readers use Google sign-in limited to the ISB email domain [confirm domain for PGP YL]. Contributors arriving from an outreach link can use any Google account; their entries wait for moderator verification and then show a "Verified CoXX" badge. First visit asks programme (PGP or PGP YL), cohort, pre-MBA background, target track and how they heard about it.
+Home: two entry points, Courses and Careers; search bar; "Write a review" button; empty state explains what the site is and asks first contributors to start.
+Course list: cards with course name, current professor, review count, workload band, quant-or-qual tag, "New or changed" badge.
+Course page: summary block (section 4), then individual reviews with professor and term, then comments under each review.
+Career list: filters for track, company, background and the "Like me" toggle; playbook and company-note cards.
+Entry page: full playbook or company note with author line and comment thread.
+Write: choose course review, playbook or company note; form per section 5; preview before publish.
+My activity: my entries, questions waiting for my reply, edit and delete.
+Moderation: flagged items queue for moderators.
+Every screen needs an empty state and an error state. A stranger should be able to finish "read a course page and ask a question" without help (test with 5 people, think-aloud, before launch).
+7. Data model
+Entity
+Key fields
+User
+id, email, name, programme, cohort, background_function, background_industry, years_experience, target_track, role (reader, moderator), created_at, source
+Course
+id, code, title, area
+Offering
+id, course_id, professor, term_label, cohort_year, is_current. Reviews attach to an offering, so a professor change is visible
+CourseReview
+id, offering_id, author_id, visibility, fields from 5.1, status (live, flagged, removed), created_at, updated_at
+CareerEntry
+id, type (playbook, company_note), author_id, track, company, fields from 5.2 or 5.3, visibility, status, timestamps
+Comment
+id, entry_type, entry_id, parent_id, author_id, body, created_at, first_reply_at
+Flag
+id, target_type, target_id, reporter_id, reason, resolved_by, resolved_at
+SurveyResponse
+id, user_id, survey (post_bid or career_followup), bid_effect (changed, confirmed, no effect, did not use), changed_course_id, career_action (applied or skipped firm, changed prep, chose offer, contacted author, none), action_text, seniors_asked_count, created_at
+Do not store: grades, salaries, offer amounts, phone numbers. Users can delete their account and entries.
+8. Content rules and moderation
+Review the course, not the person. No personal remarks about faculty, staff or students.
+Any user can flag an entry or comment. Moderators act within 24 hours; flagged content stays visible unless it breaks the rules above.
+Agree these rules with AAC/ASA before launch [confirm owner and meeting]. This is approval of content rules only; the MVP needs no ISB data or system access.
+Anonymous authors show as "Verified Co'26 student" (or the right cohort); moderators can see who wrote it.
+9. Instrumentation (F7)
+Event
+When
+Properties
+user_signed_up
+Profile completed (Event 1: arrived)
+programme, cohort, background, target_track, source
+course_page_viewed
+Course page opened
+course_id, review_count, has_new_or_changed_flag
+career_entry_viewed
+Career entry opened
+entry_type, track, matches_reader_background
+value_reached
+Event 2, got the thing. Courses: viewed a course page with 3+ reviews. Career: viewed a career entry matching own track or background. Either: received an author reply
+module, trigger, entry_id
+return_visit
+Event 3, came back: a session on a later calendar day than sign-up in which at least one entry is viewed
+days_since_signup, module
+entry_submitted
+Review, playbook or note published
+entry_type, contributor_cohort, form_seconds
+comment_posted / comment_answered
+Question asked / first author reply
+entry_id, hours_to_answer
+filter_used
+Any filter or the "Like me" toggle applied (diagnostic only, not an outcome)
+filter_name
+fake_door_clicked
+"Request a chat" or "Find people like me" clicked; user sees "Coming soon, want early access?"
+door, entry_id, left_contact
+Every event carries user_id and timestamp.
+Outcome measures
+Test 1: Courses
+Test 2: Career
+Supply pass
+40+ reviews from 20+ contributors; 10+ Term 7 courses with 3+ reviews, by 3 Jan 2027
+10+ entries: 5+ playbooks across 3+ tracks and 5+ company notes
+Survey
+Once, 11 to 17 Jan 2027 (after Term 7 bidding closes), to Co'27 readers who viewed a Term 7 course page. "Did ISB Hood change any of your bids?" Answers kept separate: changed (name the course), confirmed, no effect, did not use. Plus "How many seniors did you ask this time?"
+Two weeks after first visit, to career readers: "Name one thing you did because of an entry." Coded as applied or skipped a firm, changed prep plan, chose an offer, contacted the author, or none
+Minimum sample
+30 responses
+20 responses
+Pass
+20%+ answer "changed" and name the course. "Confirmed" is reported but not counted
+30%+ name a concrete action
+Both
+70%+ of comment questions answered within 48 hours. Below the minimum sample the result is inconclusive: extend the survey, do not decide. We cannot observe real bids or shortlists, so these are specific, checkable self-reports, not observed behaviour
+Decision rules
+Result
+Decision
+Supply under 50% of target
+Stop building. Concierge: we interview seniors and write the entries ourselves
+Supply 50 to 99%
+One more 5-day drive with a shorter form and named asks per course or track; then open only the courses or tracks with 3+ entries
+Supply 100% or more
+Open to readers; read the outcome measure
+Changed under 10% (Test 1)
+Rethink the format
+Changed 10 to 19%
+Iterate (comparison view, fewer fields) and retest at the next bid
+Changed 20% or more
+Continue; widen to all of Co'27 and PGP YL
+Career action: under 15% / 15 to 29% / 30%+
+Drop career for now / rework entry fields / continue
+Chat (F8)
+Build only if "Request a chat" gets 15%+ click-through from readers of entries, or 20%+ of comment threads run past 3 messages
+People finder (F9)
+Build only if "Find people like me" gets 15%+ click-through from career readers and 10+ leave contact details
+10. Build and launch
+Dates
+Work
+16 Nov to 6 Dec
+Build Test 1 (F1, F2, F5, F6, F7, fake doors) with an AI build tool (Lovable or Claude Code) on a hosted database with built-in auth (for example Supabase) and product analytics (for example PostHog). Seed course and offering lists. Usability test with 5 students. 5 alumni try contributor sign-in (A10). Meet AAC/ASA on content rules
+7 to 20 Dec
+Course contribution drive: Co'26 alumni (Term 7 courses) via our contacts and CAC alumni mapping; Co'27 sections (Terms 2 to 5 courses). Add F3 and F4 (about 1 day)
+21 Dec to 3 Jan
+Term 6 starts 21 Dec. If course supply is at 50%+, run the career contribution drive. Open course pages to PGP YL readers; open Test 2 to readers from 28 Dec
+4 to 10 Jan 2027
+Term 7 bidding (week 3 of Term 6): Test 1 live for Co'27
+11 to 17 Jan
+Post-bid survey
+By 24 Jan
+Career follow-up survey; apply the decision rules
+Non-functional: works on phone browsers (links will be opened from WhatsApp); pages load in under 2 seconds; deliberate shortcuts (no caching, manual moderation, seeded lists) are written down as known debt.
+11. Open questions
+Date the Term 7 course list and professors are published (needed to seed course pages by 7 Dec).
+Whether PGP YL students take the same electives as PGP, and when they bid.
+Official Hyderabad batch size (interviewees said about 400).
+Whether ISB administration needs to approve faculty-related reviews.
+Whether ISB alumni keep access to their ISB email (decides how much of the verified-Google route we need).
+12. Brief for a prototyping tool
+Build a mobile-friendly web app called "ISB Hood" for ISB MBA students.Purpose: students read structured reviews of elective courses and careerentries written by seniors and alumni, and ask the author follow-upquestions in comments.Auth: readers use Google sign-in restricted to the ISB email domain.Contributors from an outreach link may use any Google account; theirentries stay pending until a moderator verifies them. On first logincollect programme (PGP or PGP YL), cohort, pre-MBA function, industry,years of experience, target track, and how they heard about the app.Pages: Home (Courses, Careers, Write); Course list with filters (term,workload band, quant/qual, track helped); Course page with a summary block(review count, median weekly workload, evaluation mix, quant/qual score,grade-risk split, learning value with agreement level, % who said theoutline matched, top "who should take / skip" lines) and a "New or changedcourse" banner when the current professor differs from reviewed offerings;individual reviews tagged with professor and term; threaded comments.Career list with filters (track, background) and a "Like me"toggle; fake-door buttons "Request a chat" and "Find people like me"that log a click and show "Coming soon"; Entry pages for track playbooks and company notes; Write flow withthree forms (course review, track playbook, company note) where everyrating needs a written reason; My activity; Moderation queue.Rules: reviews attach to a course offering (course + professor + term).Authors choose to show their name or "Verified CoXX student". Authors getan email when someone comments. Users can flag content; moderators resolve.Do not collect grades, salaries or offer amounts.Analytics: log user_signed_up, course_page_viewed, career_entry_viewed,value_reached (per module), return_visit (later day + entry viewed),fake_door_clicked, entry_submitted, comment_posted,comment_answered (with hours_to_answer) and filter_used, each with user_idand timestamp. Show the post-bid survey once after the bid deadline anda career follow-up survey two weeks after a reader's first career visit.Design: clean, minimal, navy (#192890) and teal (#28B2AE) on white;readable on a phone; every list has an empty state that invites the firstcontribution.

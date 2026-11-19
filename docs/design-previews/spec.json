@@ -1,0 +1,379 @@
+{
+  "design": "shipos",
+  "title": "ISB Hood",
+  "user": {
+    "name": "Ravi Menon",
+    "role": "PGP Co'27"
+  },
+  "screens": [
+    {
+      "id": "courses",
+      "layout": "app",
+      "title": "Courses",
+      "subtitle": "What earlier batches said, by professor and term",
+      "icon": "book-open",
+      "navLabel": "Courses",
+      "actions": [
+        {
+          "label": "Write a review",
+          "to": "write",
+          "icon": "pencil"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "alert",
+          "tone": "warn",
+          "title": "Two questions about your bids",
+          "text": "Bidding is over. Did ISB Hood change anything? It takes under a minute."
+        },
+        {
+          "type": "table",
+          "title": "Term 7 electives",
+          "search": true,
+          "rowTo": "course",
+          "columns": [
+            "Course",
+            "Professor",
+            {
+              "label": "Reviews",
+              "type": "num"
+            },
+            "Workload",
+            {
+              "label": "Status",
+              "type": "status"
+            }
+          ],
+          "rows": [
+            [
+              "Pricing Strategy",
+              "Prof B",
+              4,
+              "2-4 h",
+              {
+                "t": "New professor",
+                "s": "warn"
+              }
+            ],
+            [
+              "Corporate Valuation",
+              "Prof C",
+              6,
+              "6+ h",
+              {
+                "t": "Reviewed",
+                "s": "good"
+              }
+            ],
+            [
+              "Product Management",
+              "Prof D",
+              3,
+              "4-6 h",
+              {
+                "t": "Reviewed",
+                "s": "good"
+              }
+            ],
+            [
+              "Negotiation Analysis",
+              "Prof E",
+              0,
+              "\u2014",
+              {
+                "t": "No reviews yet",
+                "s": "idle"
+              }
+            ],
+            [
+              "Data Science for Managers",
+              "Prof F",
+              2,
+              "4-6 h",
+              {
+                "t": "Few reviews",
+                "s": "idle"
+              }
+            ]
+          ],
+          "empty": "No course matches. Try another search."
+        }
+      ]
+    },
+    {
+      "id": "course",
+      "layout": "app",
+      "title": "Pricing Strategy",
+      "subtitle": "MKT-501 \u00b7 Prof B \u00b7 Term 7, Co'27",
+      "icon": "book-open",
+      "nav": false,
+      "actions": [
+        {
+          "label": "Add your review",
+          "to": "write",
+          "icon": "plus"
+        },
+        {
+          "label": "All courses",
+          "to": "courses",
+          "variant": "secondary"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "alert",
+          "tone": "warn",
+          "title": "New or changed course",
+          "text": "Reviews below are for Prof A (Term 7, Co'26). This term it is taught by Prof B, so workload and grading may differ."
+        },
+        {
+          "type": "kpis",
+          "items": [
+            {
+              "label": "Weekly workload",
+              "value": "2-4 h",
+              "note": "median, outside class"
+            },
+            {
+              "label": "Learning value",
+              "value": "4 of 5",
+              "note": "high agreement"
+            },
+            {
+              "label": "Grade risk",
+              "value": "Medium",
+              "note": "1 low \u00b7 2 medium \u00b7 1 high"
+            },
+            {
+              "label": "Outline matched",
+              "value": "50%",
+              "note": "2 of 4 said yes"
+            }
+          ]
+        },
+        {
+          "type": "cols",
+          "widths": [2, 1],
+          "items": [
+            {
+              "type": "list",
+              "title": "Reviews",
+              "items": [
+                {
+                  "title": "Ravi Menon, Co'26",
+                  "text": "The group project has four graded sub-parts the outline never lists. Cases map closely to real pricing calls.",
+                  "meta": "Dec 2026",
+                  "status": "4 of 5",
+                  "tone": "good",
+                  "avatar": "person"
+                },
+                {
+                  "title": "Verified Co'26 student",
+                  "text": "If you want a light term, skip it: the project lands in the same week as the mid-term.",
+                  "meta": "Dec 2026",
+                  "status": "3 of 5",
+                  "tone": "warn",
+                  "icon": "user"
+                },
+                {
+                  "title": "Asha Rao, Co'26",
+                  "text": "Consultants who want pricing cases for interviews should take it.",
+                  "meta": "Nov 2026",
+                  "status": "5 of 5",
+                  "tone": "good",
+                  "avatar": "person:2"
+                }
+              ]
+            },
+            {
+              "type": "chart",
+              "title": "Evaluation mix",
+              "kind": "donut",
+              "labels": ["Participation", "Quizzes", "Individual", "Group", "Final"],
+              "series": [
+                {
+                  "name": "Share",
+                  "data": [23, 7, 20, 20, 30]
+                }
+              ],
+              "center": "100%",
+              "centerLabel": "of grade"
+            }
+          ]
+        },
+        {
+          "type": "form",
+          "title": "Ask the author",
+          "text": "Public: your name and cohort show with your question. The author gets an email.",
+          "fields": [
+            {
+              "label": "Your question",
+              "type": "textarea",
+              "placeholder": "How heavy is the final? Is it open book?",
+              "wide": true
+            }
+          ],
+          "submit": {
+            "label": "Ask",
+            "toast": "Question posted. The author gets an email."
+          }
+        }
+      ]
+    },
+    {
+      "id": "write",
+      "layout": "app",
+      "title": "Write a review",
+      "subtitle": "About 5 minutes. Saved as you go.",
+      "icon": "pencil",
+      "navLabel": "Write",
+      "blocks": [
+        {
+          "type": "progress",
+          "title": "Step 2 of 4 \u00b7 Grading",
+          "items": [
+            {
+              "label": "Your progress",
+              "value": 2,
+              "max": 4,
+              "display": "2 of 4"
+            }
+          ]
+        },
+        {
+          "type": "form",
+          "title": "Grading",
+          "text": "Every rating needs a reason. Review the course, not the person.",
+          "fields": [
+            {
+              "label": "Class participation %",
+              "type": "number",
+              "value": "30"
+            },
+            {
+              "label": "Final %",
+              "type": "number",
+              "value": "70"
+            },
+            {
+              "label": "Grade risk",
+              "type": "select",
+              "options": ["Low", "Medium", "High"]
+            },
+            {
+              "label": "Why that grade risk?",
+              "type": "textarea",
+              "placeholder": "Tight curve, one exam decides it\u2026",
+              "wide": true
+            }
+          ],
+          "submit": {
+            "label": "Continue",
+            "toast": "Saved. Step 3 of 4."
+          }
+        }
+      ]
+    },
+    {
+      "id": "me",
+      "layout": "app",
+      "title": "My activity",
+      "icon": "user",
+      "navLabel": "My activity",
+      "blocks": [
+        {
+          "type": "list",
+          "title": "Questions waiting for you",
+          "items": [
+            {
+              "title": "Meera Das, YL 2026-28",
+              "text": "Would you take it again with a full placement load?",
+              "meta": "on your Pricing Strategy review",
+              "status": "Answer",
+              "tone": "warn",
+              "icon": "message-circle",
+              "to": "course"
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "title": "Your reviews",
+          "columns": [
+            "Course",
+            "Professor",
+            {
+              "label": "Status",
+              "type": "status"
+            }
+          ],
+          "rows": [
+            [
+              "Pricing Strategy",
+              "Prof A \u00b7 Term 7, Co'26",
+              {
+                "t": "Live",
+                "s": "good"
+              }
+            ],
+            [
+              "Business Analytics",
+              "Prof G \u00b7 Term 5, Co'26",
+              {
+                "t": "Draft",
+                "s": "idle"
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metrics",
+      "layout": "app",
+      "title": "Metrics",
+      "subtitle": "Every pass line, live",
+      "icon": "chart-column",
+      "navLabel": "Admin",
+      "blocks": [
+        {
+          "type": "kpis",
+          "items": [
+            {
+              "label": "Reviews submitted",
+              "value": "35",
+              "note": "target 40",
+              "spark": [4, 9, 15, 22, 28, 35]
+            },
+            {
+              "label": "Contributors",
+              "value": "17",
+              "note": "target 20",
+              "spark": [2, 5, 9, 12, 15, 17]
+            },
+            {
+              "label": "Changed a bid",
+              "value": "24%",
+              "note": "target 20%",
+              "delta": "+4 pts",
+              "trend": "up",
+              "good": true
+            },
+            {
+              "label": "Answered in 48 h",
+              "value": "76%",
+              "note": "target 70%"
+            }
+          ]
+        },
+        {
+          "type": "alert",
+          "tone": "warn",
+          "title": "Supply at 80% of target",
+          "text": "50 to 99%: one more 5-day drive with a shorter form and named asks, then open only courses with 3+ reviews."
+        }
+      ]
+    }
+  ]
+}
