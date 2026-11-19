@@ -104,7 +104,7 @@ async function Queue() {
             <li key={person.id} className={card}>
               <h2 className="font-semibold text-foreground">{name}</h2>
               <dl className="mt-2 space-y-1 text-sm">
-                <Row label="Google account" value={person.email} />
+                <Row label="Signed in with" value={person.email} />
                 <Row label="Says they are" value={person.cohort ?? "No cohort given"} />
                 <Row label="Came from" value={person.source ?? "Unknown"} />
                 <Row label="Waiting since" value={formatDate(person.profile_completed_at)} />

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { GoogleSignIn } from "@/components/google-sign-in";
-import { safeCampaign, safeCourseId } from "@/lib/auth/access";
+import { EmailSignIn } from "@/components/email-sign-in";
+import { safeCampaign, safeCourseId, safeNextPath } from "@/lib/auth/access";
 
 export const metadata: Metadata = { title: "Share what you learned · ISB Hood" };
 
@@ -25,14 +25,15 @@ export default function ContributePage({ searchParams }: PageProps<"/contribute"
           appear as “Verified Co’26 student”. The team can always see who wrote an entry.
         </li>
         <li>
-          <span className="font-medium text-brand">Any Google account works.</span> We check your
-          name against our alumni list before your review is published.
+          <span className="font-medium text-brand">Any email address works.</span> We email you a
+          code to sign in, then check your name against our alumni list before your review is
+          published.
         </li>
       </ul>
 
       <div className="mt-8">
         {/* The link's parameters are read at request time, so this part streams in. */}
-        <Suspense fallback={<GoogleSignIn intent="contributor" />}>
+        <Suspense fallback={<EmailSignIn intent="contributor" placeholder="you@example.com" />}>
           <ContributorSignIn searchParams={searchParams} />
         </Suspense>
       </div>
@@ -51,10 +52,12 @@ async function ContributorSignIn({
 }) {
   const params = await searchParams;
   return (
-    <GoogleSignIn
+    <EmailSignIn
       intent="contributor"
       src={safeCampaign(params.src)}
       course={safeCourseId(params.course)}
+      next={safeNextPath(params.next)}
+      placeholder="you@example.com"
     />
   );
 }

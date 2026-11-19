@@ -26,8 +26,12 @@ These steps need a person with a browser; they create accounts and cannot be scr
 2. **Supabase.** Create one project on the Free plan, region Mumbai (`ap-south-1`). Copy the project URL, anon key and service-role key.
 3. **Database.** In the Supabase SQL editor run, in order: `supabase/migrations/0001_schema.sql`, `0002_access.sql`, `0003_default_settings.sql`, `0004_verification.sql`, `0005_courses_admin.sql`, `0006_value_once.sql`, `0007_comments_moderation.sql`, `0008_surveys_metrics.sql`, and any later numbered files. For a development project also run `supabase/seed/dev_seed.sql`.
 4. **Check access on the real database.** In the SQL editor: `select relname from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relkind = 'r' and not c.relrowsecurity;` must return no rows.
-5. **Google sign-in.** In Google Cloud Console create an OAuth client (Web). Authorised redirect URI: the callback URL shown in Supabase under Authentication > Providers > Google. Set the consent screen to External and **In production** (only email and profile scopes, so no Google review). Paste the client ID and secret into Supabase.
-6. **Vercel.** Import the GitHub repository on the Hobby plan. Add the environment variables. Note the `*.vercel.app` address; set it as `NEXT_PUBLIC_SITE_URL` and in Supabase under Authentication > URL configuration set it as the Site URL and add `<address>/auth/callback` (and `http://localhost:3000/auth/callback` for development) to the redirect allow-list.
+5. **Sign-in by emailed code.** People type their email and get a 6-digit code; there is no Google or Microsoft app to set up. In Supabase:
+   - Authentication > Sign In / Providers > Email: Email provider on. Set "Email OTP expiration" to 600 (10 minutes).
+   - Authentication > Emails > SMTP Settings: turn on custom SMTP with the project Gmail account from step 7 (host `smtp.gmail.com`, port 465, the Gmail address as username, its app password). Do step 7 first: Supabase's built-in sender is for testing only and sends very few emails an hour.
+   - Authentication > Emails > Templates: in both "Magic Link" and "Confirm signup", replace the body with a code and no link, for example: `<h2>Your ISB Hood code</h2><p>Enter this code to sign in: <strong>{{ .Token }}</strong></p><p>It expires in 10 minutes. If you did not ask for it, ignore this email.</p>`. Keep links out: Outlook's link scanner opens them and uses them up.
+   - Authentication > Rate Limits: keep the defaults; one code per address per minute is built in.
+6. **Vercel.** Import the GitHub repository on the Hobby plan. Add the environment variables. Note the `*.vercel.app` address; set it as `NEXT_PUBLIC_SITE_URL` and in Supabase under Authentication > URL configuration set it as the Site URL.
 7. **Email.** Create a new Gmail account for the project, turn on 2-step verification, create an app password, and set `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER`, `SMTP_PASSWORD` and `EMAIL_FROM`. Without these, emails are only printed to the server log.
    7a. **Daily job.** Set `CRON_SECRET` in Vercel to a long random string (for example the output of `openssl rand -hex 32`). `vercel.json` already schedules `/api/cron/daily` for 02:30 UTC (08:00 IST); Vercel sends the secret with each run.
 8. **PostHog.** Create a free project; set `NEXT_PUBLIC_POSTHOG_KEY` to the project token and `NEXT_PUBLIC_POSTHOG_HOST` to the ingestion host for your region, `https://us.i.posthog.com` or `https://eu.i.posthog.com` (not the app address).
@@ -35,14 +39,15 @@ These steps need a person with a browser; they create accounts and cannot be scr
 
 ## Check M1 by hand
 
-Needs steps 2, 3 and 5 above, the three Supabase keys in `.env.local`, and `pnpm dev`. Use three Google accounts: one ISB, two personal.
+Needs steps 2, 3, 5 and 7 above, the three Supabase keys in `.env.local`, and `pnpm dev`. Use three email addresses: one `@isb.edu`, two personal (Gmail or Outlook).
 
-1. **ISB account, `/signin`.** Lands on "About you". Submit it empty: every field shows an error. Fill it in: lands on Home with "Hello, <name>". In the SQL editor, `select name, props from events order by id desc limit 1;` shows `user_signed_up`.
-2. **Personal account, `/signin`.** Lands on "That was not an ISB email address". `select count(*) from auth.users where email = '<that address>';` returns 0.
-3. **Second personal account, `/contribute?src=test&course=<a course id>`.** Lands on "About you" with no "How did you hear" question. After submitting: the review holding page. Go to `/`: "Thanks, <name>… checking your name". `/admin/verification` shows a 404.
-4. **Make the ISB account a moderator** (`supabase/seed/moderators.sql`), reload: an Admin link appears. `/admin/verification` lists the person from step 3. Press Verify: the list empties.
-5. **Back as the step-3 account:** Home now says "Hello". Sign out, then sign in again from `/signin` (not the contributor link): still gets in.
-6. **Sign out** on any account returns to `/signin`, and `/` redirects there.
+1. **ISB address, `/signin`.** Type it and press "Email me a sign-in code". A 6-digit code arrives within a minute (check junk); the email has no link. Type it: lands on "About you". Submit it empty: every field shows an error. Fill it in: lands on Home with "Hello, <name>". In the SQL editor, `select name, props from events order by id desc limit 1;` shows `user_signed_up`.
+2. **Wrong code:** sign out, ask for a code again and type `000000`: "That code is wrong or has expired". "Send a new code" straight away says to wait a minute.
+3. **Personal address, `/signin`.** It says to use an ISB address and sends nothing. `select count(*) from auth.users where email = '<that address>';` returns 0.
+4. **Second personal address, `/contribute?src=test&course=<a course id>`.** Gets a code; after "About you" with no "How did you hear" question, the review form opens on that course. Go to `/`: "Thanks, <name>… checking your name". `/admin/verification` shows a 404.
+5. **Make the ISB account a moderator** (`supabase/seed/moderators.sql`), reload: an Admin link appears. `/admin/verification` lists the person from step 4. Press Verify: the list empties.
+6. **Back as the step-4 account:** Home now says "Hello". Sign out, then sign in again from `/contribute`: still gets in. From `/signin` the personal address is refused, as intended.
+7. **Sign out** on any account returns to `/signin`, and `/` redirects there.
 
 ## Check M2 by hand
 
@@ -50,7 +55,7 @@ Needs "Check M1 by hand" done, so there is a moderator, a verified contributor a
 
 1. **Moderator, Admin > Courses.** Paste the example rows and import: the summary counts new courses and offerings. Import the same rows again: zero new. Import a file with a wrong header: nothing changes and the errors name the rows.
 2. **Moderator, Admin > Outreach.** Import two rows for the same person and different courses: one contact, "asked about 2 courses".
-3. **On a phone, open the contributor link** shown under a course in Admin > Courses with a new personal Google account. After "About you" the form opens on that course. Time it: a real review should take about 5 minutes.
+3. **On a phone, open the contributor link** shown under a course in Admin > Courses with a new personal email address. After "About you" the form opens on that course. Time it: a real review should take about 5 minutes.
 4. **Press Continue on an empty step:** each missing answer is marked. Enter a mix that totals 90: it says so and will not continue.
 5. **Finish step 2, close the tab, open `/write`:** the review is listed as "Draft". "Continue writing" reopens at step 3 with the earlier answers in place.
 6. **Publish.** As the unverified contributor it says it goes live after verification. Verify them in Admin: `select status from course_reviews` shows `live`.
@@ -75,7 +80,7 @@ Needs "Check M2 by hand" done, with at least four reviews written by different a
 Needs "Check M3 by hand" done and the email settings from step 7. Use two accounts: a reader and the author of an anonymous review (preference "Right away").
 
 1. **Ask:** as the reader, open the review and "Ask the author". The question appears at once. Within 5 minutes the author's inbox has "A question about your … review" (check spam too).
-2. **Reply link:** sign out the author, then click "Answer the question" in the email. After Google sign-in it lands on that thread with the reply box focused.
+2. **Reply link:** sign out the author, then click "Answer the question" in the email. After signing in with the emailed code it lands on that thread with the reply box focused.
 3. **Answer:** post an answer. On the page it shows as "Author", not the name. The reader gets "Your question about … has an answer", which also says "The author". In the SQL editor: `select first_reply_at from comments where parent_id is null order by created_at desc limit 1;` is set, and `select props from events where name = 'comment_answered' order by id desc limit 1;` has `hours_to_answer`. The reader has a `value_reached` row with `trigger` = `author_reply_received`, unless they already had one for courses.
 4. **Pay figures:** post "they offered 30 LPA". It asks first; "Post anyway" posts it and an automatic flag appears in Admin > Flags.
 5. **Flags:** as the reader, flag the review. It stays visible. Admin > Flags shows it with its age and reason. "Ask author to edit" emails the author; "Remove" takes it off the course page; "Keep" just clears the flag.

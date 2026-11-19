@@ -13,8 +13,8 @@ export default function PrivacyPage() {
         <h2 className="font-semibold text-foreground">What we keep</h2>
         <ul className="mt-1 list-disc space-y-1 pl-5 text-foreground/80">
           <li>
-            Your Google email and name, and the profile you fill in once: programme, cohort, pre-MBA
-            background, target track.
+            Your email address and name, and the profile you fill in once: programme, cohort,
+            pre-MBA background, target track.
           </li>
           <li>What you write: reviews, questions and answers.</li>
           <li>

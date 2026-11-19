@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { GoogleSignIn } from "@/components/google-sign-in";
+import { EmailSignIn } from "@/components/email-sign-in";
 import { safeNextPath } from "@/lib/auth/access";
 
 export const metadata: Metadata = { title: "Sign in · ISB Hood" };
@@ -17,7 +17,7 @@ export default function SignInPage({ searchParams }: PageProps<"/signin">) {
 
       <div className="mt-8">
         {/* An email link passes ?next=, read at request time. */}
-        <Suspense fallback={<GoogleSignIn intent="reader" />}>
+        <Suspense fallback={<EmailSignIn intent="reader" />}>
           <SignIn searchParams={searchParams} />
         </Suspense>
       </div>
@@ -37,12 +37,21 @@ async function SignIn({ searchParams }: { searchParams: PageProps<"/signin">["se
   const next = safeNextPath((await searchParams).next);
   return (
     <>
-      <GoogleSignIn intent="reader" next={next} />
+      <EmailSignIn intent="reader" next={next} />
       <p className="mt-3 text-sm text-muted-foreground">
-        {next
-          ? "Use the Google account you write on ISB Hood with."
-          : "Use your ISB email address."}
+        Use your ISB email address. We email you a code; no password needed.
       </p>
+      {next ? (
+        <p className="mt-6 text-sm text-foreground">
+          Wrote a review with your own email as an alum?{" "}
+          <Link
+            href={`/contribute?next=${encodeURIComponent(next)}`}
+            className="font-medium text-brand underline underline-offset-4"
+          >
+            Sign in with that email
+          </Link>
+        </p>
+      ) : null}
     </>
   );
 }

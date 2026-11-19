@@ -9,8 +9,8 @@ export default function SignInProblemPage() {
     <>
       <h1 className="type-title">Sign-in did not finish</h1>
       <p className="mt-2 text-foreground/80">
-        Nothing was saved. This usually means the Google window was closed early or the link
-        expired. Try once more; if it keeps happening, tell the ISB Hood team.
+        Nothing was saved. This usually means the code had expired or the session expired. Try once
+        more; if it keeps happening, tell the ISB Hood team.
       </p>
       <div className="mt-8">
         <Link href="/signin" className={primaryButton}>

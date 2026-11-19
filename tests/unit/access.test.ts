@@ -3,6 +3,8 @@ import {
   afterOnboardingPath,
   decideAccess,
   isReaderDomain,
+  normalizeCode,
+  normalizeEmail,
   safeCampaign,
   safeCourseId,
   shellFor,
@@ -130,5 +132,36 @@ describe("values carried through sign-in", () => {
   it("sends a contributor with a course to the review form, otherwise home", () => {
     expect(afterOnboardingPath(id)).toBe(`/write/course-review?course=${id}`);
     expect(afterOnboardingPath(null)).toBe("/");
+  });
+});
+
+describe("sign-in by emailed code", () => {
+  it("normalises an email address", () => {
+    expect(normalizeEmail("  Asha_Rao@ISB.edu ")).toBe("asha_rao@isb.edu");
+    for (const bad of [
+      "",
+      "asha",
+      "asha@",
+      "@isb.edu",
+      "a b@isb.edu",
+      null,
+      7,
+      `${"a".repeat(250)}@isb.edu`,
+    ]) {
+      expect(normalizeEmail(bad), String(bad)).toBeNull();
+    }
+  });
+
+  it("accepts the code with spaces, digits only", () => {
+    expect(normalizeCode("123456")).toBe("123456");
+    expect(normalizeCode(" 123 456 ")).toBe("123456");
+    for (const bad of ["12345", "12a456", "", null, "12345678901"]) {
+      expect(normalizeCode(bad), String(bad)).toBeNull();
+    }
+  });
+
+  it("keeps the reader door to ISB addresses, whatever the case", () => {
+    expect(isReaderDomain(normalizeEmail("RAVI@ISB.EDU")!, ["isb.edu"])).toBe(true);
+    expect(isReaderDomain(normalizeEmail("ravi@outlook.com")!, ["isb.edu"])).toBe(false);
   });
 });

@@ -46,8 +46,8 @@ export type AccessDecision =
   | { kind: "reject" };
 
 /**
- * Decided on the server after Google returns. Google's `hd` parameter is only
- * a hint, so the email on the verified session is the only thing trusted here.
+ * Decided on the server once the person has typed the emailed code. The email
+ * on that verified session is the only thing trusted here.
  */
 export function decideAccess(args: {
   email: string;
@@ -118,4 +118,19 @@ export function safeNextPath(value: unknown): string | null {
 /** Where someone goes after signing in: back to the email link, the review form, or home. */
 export function landingPath(intent: { next: string | null; course: string | null }): string {
   return intent.next ?? afterOnboardingPath(intent.course);
+}
+
+/** Lower-cased, trimmed email, or null if it does not look like one. */
+export function normalizeEmail(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const email = value.trim().toLowerCase();
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
+  return email;
+}
+
+/** The code from the sign-in email: digits only (Supabase sends six). */
+export function normalizeCode(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const code = value.replace(/\s+/g, "");
+  return /^\d{6,10}$/.test(code) ? code : null;
 }

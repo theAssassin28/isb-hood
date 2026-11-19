@@ -2,8 +2,8 @@ import "server-only";
 import { cookies } from "next/headers";
 import { safeCampaign, safeCourseId, safeNextPath, type SignInIntent } from "./access";
 
-// What the person was doing when they pressed "Continue with Google", carried
-// across the round trip to Google in a short-lived cookie. A cookie rather
+// What the person was doing when they asked for a sign-in code, carried to
+// the moment they type it in a short-lived cookie. A cookie rather
 // than query parameters on the redirect URL, so the Supabase redirect
 // allow-list only ever has to match one fixed callback address.
 
