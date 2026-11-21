@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Hedvig_Letters_Serif } from "next/font/google";
 import Link from "next/link";
+import { DemoBanner } from "@/components/demo-banner";
 import "./globals.css";
 
 // Body in Geist (Stella), titles in Hedvig Letters Serif (Kero). Self-hosted by Next at build time.
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geist.variable} ${hedvig.variable} h-full`}>
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
+        <DemoBanner />
         {children}
         <footer className="mx-auto flex w-full max-w-xl gap-4 border-t border-border px-4 pt-2 pb-8">
           <Link

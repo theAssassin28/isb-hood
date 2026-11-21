@@ -1,12 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { DemoPersonas } from "@/components/demo-personas";
 import { EmailSignIn } from "@/components/email-sign-in";
+import { isDemo } from "@/lib/demo/mode";
 import { safeNextPath } from "@/lib/auth/access";
 
 export const metadata: Metadata = { title: "Sign in · ISB Hood" };
 
 export default function SignInPage({ searchParams }: PageProps<"/signin">) {
+  if (isDemo()) {
+    return (
+      <>
+        <h1 className="type-title">Choose who you are</h1>
+        <p className="mt-3 text-foreground/80">
+          This is a demo with sample people and reviews. Pick someone to see ISB Hood through their
+          eyes; switch any time from the strip at the top.
+        </p>
+        <div className="mt-6">
+          <DemoPersonas />
+        </div>
+      </>
+    );
+  }
   return (
     <>
       <h1 className="type-title">What earlier batches learned, with reasons</h1>

@@ -3,6 +3,7 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isDemo } from "@/lib/demo/mode";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { shellFor, type Profile, type Shell } from "./access";
 
@@ -21,7 +22,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   // Touch the request first, so a page that asks who the user is can never be
   // prerendered at build time, whatever the environment looks like then.
   await cookies();
-  if (!isSupabaseConfigured()) return null;
+  if (!isSupabaseConfigured() && !isDemo()) return null;
 
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();

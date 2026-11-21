@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { DemoPersonas } from "@/components/demo-personas";
 import { EmailSignIn } from "@/components/email-sign-in";
+import { isDemo } from "@/lib/demo/mode";
 import { safeCampaign, safeCourseId, safeNextPath } from "@/lib/auth/access";
 
 export const metadata: Metadata = { title: "Share what you learned · ISB Hood" };
@@ -32,10 +34,20 @@ export default function ContributePage({ searchParams }: PageProps<"/contribute"
       </ul>
 
       <div className="mt-8">
+        {isDemo() ? (
+          <>
+            <p className="mb-3 text-sm text-muted-foreground">
+              In the demo, pick an alum to continue as:
+            </p>
+            <DemoPersonas door="contributor" />
+          </>
+        ) : null}
         {/* The link's parameters are read at request time, so this part streams in. */}
-        <Suspense fallback={<EmailSignIn intent="contributor" placeholder="you@example.com" />}>
-          <ContributorSignIn searchParams={searchParams} />
-        </Suspense>
+        {isDemo() ? null : (
+          <Suspense fallback={<EmailSignIn intent="contributor" placeholder="you@example.com" />}>
+            <ContributorSignIn searchParams={searchParams} />
+          </Suspense>
+        )}
       </div>
 
       <p className="mt-6 text-sm text-muted-foreground">

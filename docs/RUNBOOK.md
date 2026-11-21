@@ -18,6 +18,26 @@ pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 
 `pnpm test` applies every file in `supabase/migrations/` to an in-process Postgres (PGlite) and checks the access rules. No Docker or Supabase account is needed to run it.
 
+## Demo with sample data (no services needed)
+
+With no Supabase keys in `.env.local`, the app runs as a clickable prototype on dummy data. Force it either way with `ISB_HOOD_DEMO=1` or `ISB_HOOD_DEMO=0`.
+
+1. `pnpm dev`, then open http://localhost:3000.
+2. The sign-in page lists people to sign in as. No email is sent.
+3. The strip at the top of every page has **Switch person** and **Reset demo data**.
+
+| Person             | Shows                                                           |
+| ------------------ | --------------------------------------------------------------- |
+| Ravi, PGP Co'27    | Reading, asking a question, the post-bid survey, his own review |
+| Meera, PGP YL      | The YL reader view                                              |
+| Asha, Co'26 alum   | Writing a named review, answering questions                     |
+| Kiran, Co'26 alum  | An anonymous author answering as "Author"                       |
+| Dev, Co'25 alum    | A contributor still waiting for verification                    |
+| Nisha, moderator   | Verifying Dev, flags, imports, metrics                          |
+| Rohan, new student | Onboarding                                                      |
+
+The data lives in `lib/demo/seed-data.ts`; edit it and press Reset. Changes made while clicking are kept in memory by the server process only, so they vanish on restart. Present from `pnpm dev` (or `pnpm build && pnpm start`) on a laptop; a serverless host would lose them between requests. Email, PostHog and the daily job do nothing in the demo.
+
 ## One-time setup of the hosted services (all free plans)
 
 These steps need a person with a browser; they create accounts and cannot be scripted from here. Do them in this order. Put every key in Vercel's environment variables and in a local `.env.local` (names in `.env.example`); never commit them.

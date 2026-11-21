@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isDemo } from "@/lib/demo/mode";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import {
   isReaderDomain,
@@ -101,7 +102,7 @@ export async function verifyCode(previous: SignInState, formData: FormData): Pro
 }
 
 export async function signOut(): Promise<void> {
-  if (isSupabaseConfigured()) {
+  if (isSupabaseConfigured() || isDemo()) {
     const supabase = await createClient();
     await supabase.auth.signOut();
   }
