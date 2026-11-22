@@ -1,10 +1,14 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { DEMO_COOKIE } from "@/lib/demo/client";
+import { db, demoProfileForEmail } from "@/lib/demo/db";
 import { isDemo } from "@/lib/demo/mode";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import {
+  DEFAULT_READER_DOMAINS,
   isReaderDomain,
   normalizeCode,
   normalizeEmail,
@@ -32,9 +36,11 @@ export type SignInState = {
 const NOT_ON = "Sign-in is not switched on yet. The team is still setting up.";
 
 export async function requestCode(previous: SignInState, formData: FormData): Promise<SignInState> {
-  if (!isSupabaseConfigured()) return { ...previous, message: NOT_ON };
+  // The prototype runs every check below but sends no email (see verifyCode).
+  if (!isDemo() && !isSupabaseConfigured()) return { ...previous, message: NOT_ON };
 
   const email = normalizeEmail(formData.get("email"));
+
   if (!email) {
     return {
       ...previous,
@@ -44,7 +50,8 @@ export async function requestCode(previous: SignInState, formData: FormData): Pr
   }
   const intent = formData.get("intent") === "contributor" ? "contributor" : "reader";
 
-  if (intent === "reader" && !isReaderDomain(email, await readerDomains())) {
+  const domains = isDemo() ? DEFAULT_READER_DOMAINS : await readerDomains();
+  if (intent === "reader" && !isReaderDomain(email, domains)) {
     return {
       ...previous,
       step: "email",
@@ -52,6 +59,8 @@ export async function requestCode(previous: SignInState, formData: FormData): Pr
       message: "Use your ISB email address. Alumni without one can sign in as a contributor below.",
     };
   }
+
+  if (isDemo()) return { step: "code", email, message: null, sentAt: Date.now() };
 
   await writeIntent({
     intent,
@@ -80,12 +89,27 @@ export async function requestCode(previous: SignInState, formData: FormData): Pr
 }
 
 export async function verifyCode(previous: SignInState, formData: FormData): Promise<SignInState> {
-  if (!isSupabaseConfigured()) return { ...previous, message: NOT_ON };
+  if (!isDemo() && !isSupabaseConfigured()) return { ...previous, message: NOT_ON };
   const email = normalizeEmail(formData.get("email"));
   const token = normalizeCode(formData.get("code"));
   if (!email) return { ...previous, step: "email", message: "Enter your email address again." };
   if (!token)
     return { ...previous, step: "code", email, message: "Enter the 6-digit code from the email." };
+
+  if (isDemo()) {
+    if (token.length !== 6) {
+      return { ...previous, step: "code", email, message: "The code has 6 digits." };
+    }
+    // Prototype: any well-formed code signs in. A sample person's email signs in as them.
+    const person = demoProfileForEmail(db(), email, isReaderDomain(email, DEFAULT_READER_DOMAINS));
+    (await cookies()).set(DEMO_COOKIE, person.id, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    redirect(person.completed ? "/" : "/onboarding");
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.verifyOtp({ email, token, type: "email" });

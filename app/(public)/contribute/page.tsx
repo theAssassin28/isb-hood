@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { DemoPersonas } from "@/components/demo-personas";
 import { EmailSignIn } from "@/components/email-sign-in";
 import { isDemo } from "@/lib/demo/mode";
 import { safeCampaign, safeCourseId, safeNextPath } from "@/lib/auth/access";
@@ -34,21 +33,22 @@ export default function ContributePage({ searchParams }: PageProps<"/contribute"
       </ul>
 
       <div className="mt-8">
-        {isDemo() ? (
-          <>
-            <p className="mb-3 text-sm text-muted-foreground">
-              In the demo, pick an alum to continue as:
-            </p>
-            <DemoPersonas door="contributor" />
-          </>
-        ) : null}
         {/* The link's parameters are read at request time, so this part streams in. */}
-        {isDemo() ? null : (
-          <Suspense fallback={<EmailSignIn intent="contributor" placeholder="you@example.com" />}>
-            <ContributorSignIn searchParams={searchParams} />
-          </Suspense>
-        )}
+        <Suspense
+          fallback={
+            <EmailSignIn intent="contributor" placeholder="you@example.com" prototype={isDemo()} />
+          }
+        >
+          <ContributorSignIn searchParams={searchParams} />
+        </Suspense>
       </div>
+
+      {isDemo() ? (
+        <p className="mt-3 text-sm text-muted-foreground">
+          <span className="type-status text-warn">Prototype</span> Any email and any 6-digit code
+          work. A new address starts as an alum waiting for verification.
+        </p>
+      ) : null}
 
       <p className="mt-6 text-sm text-muted-foreground">
         We never ask for grades, salaries or offer amounts.
@@ -70,6 +70,7 @@ async function ContributorSignIn({
       course={safeCourseId(params.course)}
       next={safeNextPath(params.next)}
       placeholder="you@example.com"
+      prototype={isDemo()}
     />
   );
 }

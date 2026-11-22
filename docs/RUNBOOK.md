@@ -23,8 +23,9 @@ pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 With no Supabase keys in `.env.local`, the app runs as a clickable prototype on dummy data. Force it either way with `ISB_HOOD_DEMO=1` or `ISB_HOOD_DEMO=0`.
 
 1. `pnpm dev`, then open http://localhost:3000.
-2. The sign-in page lists people to sign in as. No email is sent.
-3. The strip at the top of every page has **Switch person** and **Reset demo data**.
+2. Sign in with any email and any 6-digit code; the checks on the address still run, but no email is sent. A sample person's email (listed under **Sample accounts**) signs in as them; any other address makes a new account that starts at "About you" (an ISB address as a reader, any other as an alum waiting for verification).
+3. Ready-made personas for both sides (information seekers and contributors), with walkthroughs: [PERSONAS.md](PERSONAS.md).
+4. The strip at the top of every page has **Sample accounts** (continue as anyone in one tap) and **Reset demo data**.
 
 | Person             | Shows                                                           |
 | ------------------ | --------------------------------------------------------------- |

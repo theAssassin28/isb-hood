@@ -24,6 +24,11 @@ export const P = {
   vikram: id("a", 9),
   neha: id("a", 10),
   arnav: id("a", 11),
+  // Primary personas (docs/PERSONAS.md).
+  ananya: id("a", 12),
+  arjun: id("a", 13),
+  karan: id("a", 14),
+  ishita: id("a", 15),
 } as const;
 
 export type SeedPerson = {
@@ -41,7 +46,13 @@ export type SeedPerson = {
   verification_status: "not_required" | "pending" | "verified" | "rejected";
   source: string | null;
   /** Shown on the demo "choose who to be" screen. Leave out for background authors. */
-  persona?: { title: string; shows: string; door: "reader" | "contributor" };
+  persona?: {
+    title: string;
+    shows: string;
+    door: "reader" | "contributor";
+    /** Primary personas (docs/PERSONAS.md): listed first on Sample accounts, by side. */
+    side?: "seeker" | "contributor";
+  };
   /** Null: has not filled in "About you" yet. */
   completedDaysAgo: number | null;
 };
@@ -58,6 +69,91 @@ const person = (
 });
 
 export const PEOPLE: SeedPerson[] = [
+  // Primary personas: two information seekers and two contributors. Fictional,
+  // built from the research personas in docs/PRD.md section 3.1. Walkthroughs
+  // for each are in docs/PERSONAS.md.
+  person({
+    id: P.ananya,
+    email: "ananya.kulkarni@isb.edu",
+    full_name: "Ananya Kulkarni",
+    programme: "pgp",
+    cohort: "Co'27",
+    background_function: "consulting",
+    background_industry: "bfsi",
+    years_experience_band: "3-5",
+    target_track: "general_management",
+    source: "whatsapp_group",
+    completedDaysAgo: 5,
+    persona: {
+      title: "Ananya Kulkarni · PGP Co'27, the Elective Optimiser",
+      shows:
+        "Ex risk consultant choosing Term 7 electives: compares courses, reads reasons, asks an author",
+      door: "reader",
+      side: "seeker",
+    },
+  }),
+  person({
+    id: P.arjun,
+    email: "arjun.bhatia@isb.edu",
+    full_name: "Arjun Bhatia",
+    programme: "pgp",
+    cohort: "Co'27",
+    background_function: "finance",
+    background_industry: "bfsi",
+    years_experience_band: "6-8",
+    target_track: "product",
+    source: "friend",
+    completedDaysAgo: 9,
+    persona: {
+      title: "Arjun Bhatia · PGP Co'27, the Career Pivoter",
+      shows:
+        "CA and ex-banker moving into product: finds courses that help the switch, waits on an author's reply",
+      door: "reader",
+      side: "seeker",
+    },
+  }),
+  person({
+    id: P.karan,
+    email: "karan.malhotra@example.com",
+    full_name: "Karan Malhotra",
+    programme: "alum",
+    cohort: "Co'26",
+    background_function: "engineering",
+    background_industry: "it_software",
+    years_experience_band: "3-5",
+    target_track: "product",
+    account_type: "contributor",
+    verification_status: "verified",
+    source: "campaign:co26-term7",
+    completedDaysAgo: 20,
+    persona: {
+      title: "Karan Malhotra · Co'26 alum, the Senior Guide",
+      shows:
+        "Now a product manager, signs in with a personal email: his review is live and a question is waiting for him",
+      door: "contributor",
+      side: "contributor",
+    },
+  }),
+  person({
+    id: P.ishita,
+    email: "ishita.sharma@isb.edu",
+    full_name: "Ishita Sharma",
+    programme: "pgp",
+    cohort: "Co'27",
+    background_function: "analytics",
+    background_industry: "ecommerce",
+    years_experience_band: "0-2",
+    target_track: "consulting",
+    source: "team_email",
+    completedDaysAgo: 14,
+    persona: {
+      title: "Ishita Sharma · PGP Co'27, writing about a finished course",
+      shows:
+        "Took Business Analytics in Term 5 and has not reviewed it yet: the 4-step review form from scratch",
+      door: "reader",
+      side: "contributor",
+    },
+  }),
   person({
     id: P.ravi,
     email: "ravi.menon@isb.edu",
@@ -703,6 +799,28 @@ export const REVIEWS: SeedReview[] = [
     outline: "yes",
     closedToQuestions: true,
   },
+  // Primary persona Karan: a live review with a question waiting (from Arjun).
+  {
+    key: "r-pm-karan",
+    offering: "pm-26",
+    author: P.karan,
+    daysAgo: 10,
+    why: ["career_fit", "professor"],
+    workload: "4-6",
+    mix: [20, 0, 20, 30, 0, 30],
+    outlineGap:
+      "The group project is a full product teardown with a live user interview round; plan for two weekends of fieldwork that the outline does not mention.",
+    quantQual: 2,
+    styles: ["case_discussion", "project"],
+    risk: "medium",
+    riskWhy: "Group marks dominate, so your team matters more than usual.",
+    learning: 5,
+    learningWhy:
+      "I came from engineering, and this was where I learned to write a PRD and defend priorities. I used the prioritisation exercise in my first product interview.",
+    careers: ["product"],
+    take: "Anyone switching into product, especially without a product title before ISB.",
+    outline: "partly",
+  },
   // Business Analytics (Term 5): Ravi's own review, so his course page shows "Your review".
   {
     key: "r-ba-ravi",
@@ -737,6 +855,14 @@ export type SeedComment = {
 };
 
 export const COMMENTS: SeedComment[] = [
+  // Primary personas: Arjun asked Karan; not answered yet.
+  {
+    key: "q-pm-arjun",
+    review: "r-pm-karan",
+    author: P.arjun,
+    body: "I am a CA coming from banking with no product experience. Did the project need any coding or wireframing, or can a non-tech person carry their weight?",
+    hoursAgo: 20,
+  },
   // Answered: Ravi asked Asha, Asha replied.
   {
     key: "q-pricing-final",

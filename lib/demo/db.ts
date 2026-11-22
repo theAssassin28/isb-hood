@@ -1120,7 +1120,48 @@ export function surveyInsertCheck(
 export function personas() {
   return PEOPLE.filter((p) => p.persona).map((p) => ({
     id: p.id,
+    email: p.email,
     ...p.persona!,
     completed: p.completedDaysAgo !== null,
   }));
+}
+
+/**
+ * Demo sign-in by email: the sample person with that address, or a new account
+ * that starts at "About you". An ISB address gets a reader account; any other
+ * address is a contributor waiting for verification, as in the real app.
+ */
+export function demoProfileForEmail(
+  d: Db,
+  email: string,
+  isb: boolean,
+): { id: string; completed: boolean } {
+  const known = d.profiles.find((p) => p.email === email && !p.deleted_at);
+  if (known) return { id: String(known.id), completed: !!known.profile_completed_at };
+  const uid = newId(d, "d");
+  d.profiles.push({
+    id: uid,
+    email,
+    full_name: null,
+    programme: null,
+    cohort: null,
+    background_function: null,
+    background_industry: null,
+    years_experience_band: null,
+    target_track: null,
+    role: "reader",
+    account_type: isb ? "isb" : "contributor",
+    verification_status: isb ? "not_required" : "pending",
+    verified_by: null,
+    verified_at: null,
+    outreach_contact_id: null,
+    source: null,
+    notify_pref: "instant",
+    early_access_chat: false,
+    early_access_people: false,
+    profile_completed_at: null,
+    created_at: iso(now()),
+    deleted_at: null,
+  });
+  return { id: uid, completed: false };
 }

@@ -2,7 +2,22 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { requestCode, verifyCode, type SignInState } from "@/lib/auth/actions";
-import { errorBox, fieldInput, fieldLabel, primaryButton, quietAction } from "./styles";
+import { errorBox, fieldInput, fieldLabel, notice, primaryButton, quietAction } from "./styles";
+
+/** Two short bars and a label: where the person is in the two steps. Ink only, no accent. */
+function Steps({ at }: { at: 1 | 2 }) {
+  return (
+    <div className="mb-5 flex items-center gap-3">
+      <div className="flex flex-1 gap-1.5" aria-hidden="true">
+        <span className="h-1 flex-1 rounded-full bg-foreground" />
+        <span className={`h-1 flex-1 rounded-full ${at === 2 ? "bg-foreground" : "bg-border"}`} />
+      </div>
+      <p className="shrink-0 text-sm text-muted-foreground">
+        Step {at} of 2 · {at === 1 ? "Your email" : "The code"}
+      </p>
+    </div>
+  );
+}
 
 /**
  * Two steps: an email address, then the 6-digit code we email to it.
@@ -14,12 +29,15 @@ export function EmailSignIn({
   course,
   next,
   placeholder = "name@isb.edu",
+  prototype = false,
 }: {
   intent: "reader" | "contributor";
   src?: string | null;
   course?: string | null;
   next?: string | null;
   placeholder?: string;
+  /** The clickable prototype: no email is sent and any 6-digit code is accepted. */
+  prototype?: boolean;
 }) {
   const initial: SignInState = { step: "email", email: "", message: null, sentAt: 0 };
   const [sent, sendAction, sending] = useActionState(requestCode, initial);
@@ -57,6 +75,7 @@ export function EmailSignIn({
         className="space-y-3"
         noValidate
       >
+        <Steps at={1} />
         {hidden}
         <div>
           <label htmlFor={`email-${intent}`} className={fieldLabel}>
@@ -91,10 +110,34 @@ export function EmailSignIn({
 
   return (
     <div className="space-y-3">
-      <p className="text-foreground">
-        We sent a 6-digit code to <span className="font-medium break-all">{sent.email}</span>. It
-        can take a minute; check junk mail too.
-      </p>
+      <Steps at={2} />
+      <div>
+        <p className="text-foreground">We sent a 6-digit code to</p>
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-3">
+          <span className="type-tag max-w-full break-all">{sent.email}</span>
+          <button
+            type="button"
+            onClick={() => {
+              setEmail(sent.email);
+              setChanging(true);
+            }}
+            className={quietAction}
+          >
+            Change
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          It can take a minute; check junk mail too.
+        </p>
+      </div>
+      {prototype ? (
+        <p className={notice}>
+          <span className="type-status text-warn">Prototype</span>
+          <span className="mt-1 block text-muted-foreground">
+            No email is sent here. Type any 6 digits to continue.
+          </span>
+        </p>
+      ) : null}
       <form
         action={(formData) => {
           setLast("check");
@@ -119,7 +162,8 @@ export function EmailSignIn({
             pattern="[0-9]*"
             maxLength={10}
             required
-            className={`${fieldInput} mt-1.5 text-lg tracking-[0.3em]`}
+            placeholder="······"
+            className={`${fieldInput} mt-1.5 min-h-14 text-center font-mono text-2xl tracking-[0.5em] placeholder:tracking-[0.5em]`}
           />
         </div>
         {codeMessage ? (
@@ -141,19 +185,9 @@ export function EmailSignIn({
           {hidden}
           <input type="hidden" name="email" value={sent.email} />
           <button type="submit" disabled={sending} className={quietAction}>
-            {sending ? "Sending…" : "Send a new code"}
+            {sending ? "Sending…" : "No email? Send a new code"}
           </button>
         </form>
-        <button
-          type="button"
-          onClick={() => {
-            setEmail(sent.email);
-            setChanging(true);
-          }}
-          className={quietAction}
-        >
-          Use a different email
-        </button>
       </div>
     </div>
   );

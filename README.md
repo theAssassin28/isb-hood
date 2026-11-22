@@ -10,5 +10,6 @@ The MVP is an experiment with one loop (write a structured entry, read it, ask t
 
 - **Setup, checks and deploy steps:** [docs/RUNBOOK.md](docs/RUNBOOK.md)
 - **Deliberate shortcuts:** [docs/KNOWN_DEBT.md](docs/KNOWN_DEBT.md)
+- **Personas to try the prototype:** [docs/PERSONAS.md](docs/PERSONAS.md) (emails, what each one shows, a both-sides walkthrough)
 
-Status: M0 to M5 are built locally (foundations; sign-in and verification; course import and the review form; course list and course page; comments, email and moderation; fake doors, surveys, metrics and settings). None of it has run against a real Supabase project, mailbox or PostHog project yet. To show it without any setup, run `pnpm dev` and open http://localhost:3000: with no keys set it runs as a clickable prototype on sample data (RUNBOOK, "Demo with sample data"). Next is M6: harden and launch Test 1, which needs the hosted services set up.
+Status: M0 to M5 are built locally (foundations; sign-in and verification; course import and the review form; course list and course page; comments, email and moderation; fake doors, surveys, metrics and settings). None of it has run against a real Supabase project, mailbox or PostHog project yet. To show it without any setup, run `pnpm dev` and open http://localhost:3000: with no keys set it runs as a clickable prototype on sample data (RUNBOOK, "Demo with sample data"). Sign in with any persona's email from [docs/PERSONAS.md](docs/PERSONAS.md) and any 6-digit code. Next is M6: harden and launch Test 1, which needs the hosted services set up.
