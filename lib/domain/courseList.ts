@@ -1,7 +1,8 @@
 // Course list cards, filters and sort (docs/BUILD_PLAN.md 4.3). Pure.
 
-import { TRACKS, WORKLOAD_BANDS } from "@/lib/constants/vocab";
+import { TRACKS, trackOfCareer, WORKLOAD_BANDS } from "@/lib/constants/vocab";
 import {
+  careerCounts,
   currentOffering,
   learningValue,
   newOrChanged,
@@ -50,7 +51,8 @@ export function toCard(
     quantQual: qq === null ? null : quantQualBucket(qq),
     learningMedian: learningValue(reviews.map((r) => r.learning_value))?.median ?? null,
     flag: banner?.kind ?? null,
-    tracks: [...new Set(reviews.flatMap((r) => r.careers_helped))],
+    // Most named first, so the card shows the strongest fits first.
+    tracks: careerCounts(reviews).map((c) => c.track),
     haystack: [course.title, course.code, ...approved.map((o) => o.professor)]
       .join(" ")
       .toLowerCase(),
@@ -136,7 +138,8 @@ export function applyFilters(cards: CourseCard[], filters: Filters): CourseCard[
       return false;
     }
     if (filters.qq && card.quantQual !== filters.qq) return false;
-    if (filters.track && !card.tracks.includes(filters.track)) return false;
+    // "Helps for" is a track; a card lists specific paths, each under a track.
+    if (filters.track && !card.tracks.some((v) => trackOfCareer(v) === filters.track)) return false;
     return true;
   });
 

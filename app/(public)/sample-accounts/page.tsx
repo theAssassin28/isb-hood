@@ -12,7 +12,7 @@ export default function SampleAccountsPage() {
   return (
     <>
       <h1 className="type-title">Sample accounts</h1>
-      <p className="mt-3 text-foreground/80">
+      <p className="mt-3 max-w-2xl text-foreground/80">
         Continue as someone here, or sign in with their email and any 6-digit code. Walkthroughs for
         each are in docs/PERSONAS.md.
       </p>

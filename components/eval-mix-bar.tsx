@@ -42,8 +42,8 @@ export function EvalMixBar({ parts }: { parts: MixPart[] }) {
                 className="inline-block size-2.5 rounded-full"
                 style={{ backgroundColor: SLOT[part.key] }}
               />
-              {part.label}
-              <span className="font-medium">{part.percent}%</span>
+              {/* A real space, so screen readers and copied text read "Final 30%". */}
+              {part.label} <span className="font-medium">{part.percent}%</span>
             </li>
           ))}
         </ul>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { ActionButton } from "@/components/action-button";
 import { CsvImportForm } from "@/components/csv-import-form";
 import { card, dangerButton, notice, pageColumn, secondaryButton } from "@/components/styles";
@@ -46,7 +47,7 @@ export default function AdminCoursesPage() {
       </section>
 
       <div className="mt-8">
-        <Suspense fallback={<p className="text-muted-foreground">Loading courses…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading courses…" />}>
           <Courses />
         </Suspense>
       </div>

@@ -11,13 +11,17 @@
  *  - Kero gives the shape and the voice: Hedvig Letters Serif at weight 400 for
  *    titles, 20px card corners, 12px fields and alerts, pill buttons and chips,
  *    and more room between things.
- * Both are dark designs, so there is one theme.
+ * Both are dark designs; dark is the reference theme. A light theme mirrors
+ * it token for token (same roles, same contrast rules), with a deeper accent
+ * because sky blue is too faint on white. The page follows the system setting
+ * unless the person picks one in the footer (html[data-theme]).
  *
  * Still in force from gallery-grade: size and weight carry hierarchy; the
  * accent is only on things you can act on; four type sizes on a screen
  * (32 title, 20 heading, 16 body, 14 small); one movement (a 1px press);
  * focus always visible; empty, loading and error states drawn.
- * Contrast checked: every text pair is 4.5:1 or better.
+ * Contrast checked in both themes: every text pair is 4.5:1 or better, every
+ * control border and chart colour 3:1 or better.
  */
 
 @custom-variant dark (&:is(.dark *));
@@ -88,6 +92,77 @@
   --series-4: #c98500;
   --series-5: #d55181;
   --series-6: #0ca30c;
+}
+
+/* Light theme: the same roles as the dark tokens above. Applied when the system
+   asks for light (and the person has not chosen dark), or when they choose light. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --background: #f5f5f5;
+    --card: #ffffff;
+    --muted: #ffffff;
+    --border: #e2e2e2;
+    --input: #767676;
+    --foreground: #0c0c0c;
+    --muted-foreground: #595959;
+    --accent-brand: #0a6aa6;
+    --on-accent: #ffffff;
+    --good: #1d7a3c;
+    --warn: #8a5a00;
+    --critical: #b42318;
+    --series-1: #2563c9;
+    --series-2: #c2410c;
+    --series-3: #0f7a55;
+    --series-4: #a16207;
+    --series-5: #be185d;
+    --series-6: #15803d;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --background: #f5f5f5;
+  --card: #ffffff;
+  --muted: #ffffff;
+  --border: #e2e2e2;
+  --input: #767676;
+  --foreground: #0c0c0c;
+  --muted-foreground: #595959;
+  --accent-brand: #0a6aa6;
+  --on-accent: #ffffff;
+  --good: #1d7a3c;
+  --warn: #8a5a00;
+  --critical: #b42318;
+  --series-1: #2563c9;
+  --series-2: #c2410c;
+  --series-3: #0f7a55;
+  --series-4: #a16207;
+  --series-5: #be185d;
+  --series-6: #15803d;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Show something only in one theme (the sun/moon button). Same rules as the tokens. */
+.theme-when-light {
+  display: none;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .theme-when-light {
+    display: contents;
+  }
+  :root:not([data-theme="dark"]) .theme-when-dark {
+    display: none;
+  }
+}
+:root[data-theme="light"] .theme-when-light {
+  display: contents;
+}
+:root[data-theme="light"] .theme-when-dark {
+  display: none;
 }
 
 /* Page title: Kero's serif heading (400, -0.02em), 32px on phones, 40px up. */
@@ -181,5 +256,30 @@
       transition-duration: 0ms !important;
       animation-duration: 0ms !important;
     }
+  }
+}
+
+/* Phones with the bottom tab bar: the page scrolls inside <body>, which ends
+   exactly at the top of the tab bar. So the scrollbar (and any rubber-band)
+   stops above the menu, never behind it, and the footer is never hidden.
+   Pages without the tab bar (sign-in, onboarding) scroll the window as usual,
+   with no rubber-band. */
+@media (max-width: 1023.98px) {
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
+  html:has(nav[aria-label="Main"]) {
+    height: 100%;
+    overflow: hidden;
+  }
+  body:has(nav[aria-label="Main"]) {
+    /* relative: absolutely placed elements (screen-reader-only text) stay in
+       this scroll area instead of stretching the window, which could then be
+       scrolled by in-page jumps and leave a blank band. */
+    position: relative;
+    height: calc(100dvh - 4rem - env(safe-area-inset-bottom));
+    min-height: 0;
+    overflow-y: auto;
   }
 }

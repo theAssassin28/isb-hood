@@ -2,7 +2,13 @@
 // Pure functions over live reviews, so every rule is unit-tested and the course
 // list and the course page can never disagree about a number.
 
-import { EVALUATION_COMPONENTS, WORKLOAD_BANDS } from "@/lib/constants/vocab";
+import {
+  CAREER_PATHS,
+  careerLabel,
+  EVALUATION_COMPONENTS,
+  TRACKS,
+  WORKLOAD_BANDS,
+} from "@/lib/constants/vocab";
 import type { EvalKey } from "@/lib/schemas/courseReview";
 
 /** The fields of a live review the summary needs. */
@@ -178,7 +184,34 @@ export type CourseSummary = {
   skip: Line[];
   takeTotal: number;
   skipTotal: number;
+  /** Career paths reviewers said the course helps, most named first. */
+  careers: CareerCount[];
 };
+
+export type CareerCount = { track: string; label: string; count: number };
+
+/** Vocabulary order: specific paths first, then bare tracks (older reviews). */
+const CAREER_ORDER: string[] = [...CAREER_PATHS.map((p) => p.value), ...TRACKS.map((t) => t.value)];
+
+/**
+ * How many reviews named each career path ("Careers it helps"), most named
+ * first; ties keep the vocabulary order so the list never reshuffles.
+ */
+export function careerCounts(reviews: Pick<AggReview, "careers_helped">[]): CareerCount[] {
+  const counts = new Map<string, number>();
+  for (const review of reviews) {
+    for (const value of new Set(review.careers_helped)) {
+      counts.set(value, (counts.get(value) ?? 0) + 1);
+    }
+  }
+  const rank = (v: string) => {
+    const i = CAREER_ORDER.indexOf(v);
+    return i === -1 ? CAREER_ORDER.length : i;
+  };
+  return [...counts.entries()]
+    .map(([track, count]) => ({ track, label: careerLabel(track), count }))
+    .sort((a, b) => b.count - a.count || rank(a.track) - rank(b.track));
+}
 
 function topLines(reviews: AggReview[], key: "who_should_take" | "who_should_skip") {
   const all = [...reviews]
@@ -227,6 +260,7 @@ export function summarise(reviews: AggReview[]): CourseSummary {
     skip: skip.lines,
     takeTotal: take.total,
     skipTotal: skip.total,
+    careers: careerCounts(reviews),
   };
 }
 

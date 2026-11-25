@@ -16,16 +16,16 @@ export function DemoPersonas({
     .filter((p) => !side || (side === "other" ? !p.side : p.side === side));
   const live = db().profiles;
   return (
-    <ul className="space-y-3">
+    <ul className="grid gap-3 lg:grid-cols-2">
       {people.map((p) => {
         const deleted = !!live.find((x) => x.id === p.id)?.deleted_at;
         return (
-          <li key={p.id} className={cardFrame}>
-            <form action={demoSignIn.bind(null, p.id)}>
+          <li key={p.id} className={`${cardFrame} flex`}>
+            <form action={demoSignIn.bind(null, p.id)} className="flex w-full">
               <button
                 type="submit"
                 disabled={deleted}
-                className="block w-full rounded-lg p-5 text-left hover:bg-background disabled:opacity-45"
+                className="flex w-full flex-col items-start rounded-lg p-5 text-left hover:bg-background disabled:opacity-45"
               >
                 <span className="block font-medium text-foreground">{p.title}</span>
                 <span className="mt-0.5 block text-sm break-all text-muted-foreground">
@@ -37,7 +37,7 @@ export function DemoPersonas({
                     : p.shows}
                 </span>
                 {!deleted ? (
-                  <span className="mt-3 inline-block text-sm font-medium text-brand">
+                  <span className="mt-auto inline-block pt-3 text-sm font-medium text-brand">
                     Continue as this person →
                   </span>
                 ) : null}

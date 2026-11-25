@@ -52,6 +52,10 @@ export type SeedPerson = {
     door: "reader" | "contributor";
     /** Primary personas (docs/PERSONAS.md): listed first on Sample accounts, by side. */
     side?: "seeker" | "contributor";
+    /** Short name for the role, shown on persona cards and in the demo strip. */
+    role?: string;
+    /** The demo script shown on Home for this persona: what to try, in order. */
+    script?: { text: string; href?: string; link?: string }[];
   };
   /** Null: has not filled in "About you" yet. */
   completedDaysAgo: number | null;
@@ -90,6 +94,28 @@ export const PEOPLE: SeedPerson[] = [
         "Ex risk consultant choosing Term 7 electives: compares courses, reads reasons, asks an author",
       door: "reader",
       side: "seeker",
+      role: "Elective Optimiser",
+      script: [
+        { text: "Browse the Term 7 courses you can bid for.", href: "/courses", link: "Courses" },
+        {
+          text: "Open Pricing Strategy. Note the warning: the professor changed since these reviews.",
+          href: "/courses/MKT-501",
+          link: "Pricing Strategy",
+        },
+        {
+          text: "Compare it with Corporate Valuation: 6+ hours a week, and every rating has a reason.",
+          href: "/courses/FIN-502",
+          link: "Corporate Valuation",
+        },
+        {
+          text: "Under any review, open “Ask the author” and ask what the review does not cover.",
+        },
+        {
+          text: "Answer the two-question post-bid survey.",
+          href: "/survey/post-bid",
+          link: "Survey",
+        },
+      ],
     },
   }),
   person({
@@ -110,6 +136,27 @@ export const PEOPLE: SeedPerson[] = [
         "CA and ex-banker moving into product: finds courses that help the switch, waits on an author's reply",
       door: "reader",
       side: "seeker",
+      role: "Career Pivoter",
+      script: [
+        {
+          text: "Find courses that help a move into product: the list is filtered to “Helps for: Product”.",
+          href: "/courses?term=all&track=product",
+          link: "Product courses",
+        },
+        {
+          text: "Open Product Management. Your question to Karan is under his review, waiting.",
+          href: "/courses/STR-503",
+          link: "Product Management",
+        },
+        {
+          text: "Tap “Request a chat” on a review: it is a feature not built yet, so it says so.",
+        },
+        {
+          text: "Switch to Karan, answer the question, then switch back here to read the reply.",
+          href: "/sample-accounts",
+          link: "Switch persona",
+        },
+      ],
     },
   }),
   person({
@@ -132,6 +179,25 @@ export const PEOPLE: SeedPerson[] = [
         "Now a product manager, signs in with a personal email: his review is live and a question is waiting for him",
       door: "contributor",
       side: "contributor",
+      role: "Senior Guide",
+      script: [
+        {
+          text: "Open My activity: Arjun’s question is waiting for you.",
+          href: "/me",
+          link: "My activity",
+        },
+        {
+          text: "Tap “Answer” and reply. It shows under your review, labelled “Author”, for every reader.",
+        },
+        {
+          text: "From My activity, edit your review or see it on the course page.",
+        },
+        {
+          text: "Write a second review, for example Data Science for Managers.",
+          href: "/write",
+          link: "Write",
+        },
+      ],
     },
   }),
   person({
@@ -152,6 +218,25 @@ export const PEOPLE: SeedPerson[] = [
         "Took Business Analytics in Term 5 and has not reviewed it yet: the 4-step review form from scratch",
       door: "reader",
       side: "contributor",
+      role: "Co'27 writer",
+      script: [
+        {
+          text: "Review Business Analytics, the course you took in Term 5. The professor is already chosen.",
+          href: "/write/course-review?course=c0000000-0000-4000-8000-000000000008",
+          link: "Start the review",
+        },
+        {
+          text: "Go through the 4 steps. Answers save as you go: close the tab and reopen it to check.",
+        },
+        {
+          text: "Try to continue with a rating but no reason, or a mix that is not 100%: both are stopped.",
+        },
+        {
+          text: "Publish, then switch to Ananya and find your review on Business Analytics.",
+          href: "/sample-accounts",
+          link: "Switch persona",
+        },
+      ],
     },
   }),
   person({
@@ -483,7 +568,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 5,
     learningWhy:
       "Every case maps to a real pricing call. I used the value-based pricing framework in my first month as a PM.",
-    careers: ["product", "marketing"],
+    careers: ["product_management", "brand_management"],
     take: "Anyone heading to product or marketing roles.",
     outline: "partly",
   },
@@ -505,7 +590,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 4,
     learningWhy:
       "The conjoint and willingness-to-pay sessions were the most practical quant work I did all year.",
-    careers: ["product", "consulting"],
+    careers: ["product_management", "strategy_consulting"],
     skip: "If you want a light term: the project and cold calls together are heavy.",
     outline: "no",
   },
@@ -526,7 +611,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 4,
     learningWhy:
       "Strong for consulting interviews: three of my case interview questions were pricing cases straight out of this class.",
-    careers: ["consulting"],
+    careers: ["strategy_consulting"],
     take: "Consultants who want pricing cases for interviews.",
     outline: "partly",
   },
@@ -548,7 +633,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 5,
     learningWhy:
       "The best preparation for banking and PE technicals; I reused my model template in two interviews.",
-    careers: ["finance"],
+    careers: ["investment_banking", "pe_vc", "corporate_finance"],
     take: "Anyone targeting IB, PE or corporate development.",
     skip: "If you have never built a financial model, take a refresher first.",
     outline: "yes",
@@ -571,7 +656,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 4,
     learningWhy:
       "Hard but worth it; the viva taught me to defend numbers the way I now do in investment committee.",
-    careers: ["finance"],
+    careers: ["investment_banking", "corporate_finance"],
     take: "Finance track students with time to spare this term.",
     outline: "partly",
   },
@@ -590,7 +675,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Quizzes are frequent but small.",
     learning: 4,
     learningWhy: "Gave me enough finance fluency to talk to CFOs as a PM; not just for bankers.",
-    careers: ["finance", "product"],
+    careers: ["fpa", "product_management"],
     take: "Non-finance people who want real fluency.",
     outline: "partly",
   },
@@ -610,7 +695,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 3,
     learningWhy:
       "Useful, but too technical for a marketing career; I would choose differently now.",
-    careers: ["finance"],
+    careers: ["corporate_finance"],
     skip: "Marketing track students who want a gentle term.",
     outline: "yes",
   },
@@ -632,7 +717,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 5,
     learningWhy:
       "The single most useful course for PM interviews; my PRD from class became my portfolio piece.",
-    careers: ["product"],
+    careers: ["product_management"],
     take: "Career switchers into product, especially from finance or consulting.",
     outline: "partly",
   },
@@ -652,7 +737,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Grades track effort closely.",
     learning: 4,
     learningWhy: "Great structure; if you were a PM before ISB, the first half will feel familiar.",
-    careers: ["product"],
+    careers: ["product_management"],
     take: "First-time PMs.",
     skip: "Ex-PMs looking for something new.",
     outline: "yes",
@@ -672,7 +757,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Presentation-based; well supported.",
     learning: 4,
     learningWhy: "Good even for consultants; product thinking came up in my strategy interviews.",
-    careers: ["product", "consulting"],
+    careers: ["product_management", "strategy_consulting"],
     take: "Consultants curious about product.",
     outline: "yes",
   },
@@ -692,7 +777,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Weekly quizzes add up.",
     learning: 3,
     learningWhy: "Fine introduction, but too shallow if you already code.",
-    careers: ["general_management"],
+    careers: ["strategy_bizops", "growth_analytics"],
     take: "Managers who want to talk to data teams.",
     outline: "partly",
   },
@@ -712,7 +797,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 4,
     learningWhy:
       "For a non-coder this opened a door; I now read analytics dashboards with confidence.",
-    careers: ["marketing", "general_management"],
+    careers: ["digital_marketing", "growth_analytics"],
     take: "Non-coders who want to start.",
     outline: "no",
   },
@@ -734,7 +819,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Generous grading for effort.",
     learning: 4,
     learningWhy: "The brand audit is exactly what FMCG interviewers ask you to walk through.",
-    careers: ["marketing"],
+    careers: ["brand_management"],
     take: "FMCG marketing hopefuls.",
     outline: "partly",
   },
@@ -754,7 +839,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Clear expectations.",
     learning: 5,
     learningWhy: "Shaped how I run brand reviews as a marketing manager today.",
-    careers: ["marketing"],
+    careers: ["brand_management", "sales_category"],
     take: "Anyone going into brand roles.",
     outline: "partly",
   },
@@ -774,7 +859,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Simulation results affect the grade.",
     learning: 5,
     learningWhy: "Guest GPs were the best networking of the year; two of them now mentor me.",
-    careers: ["finance"],
+    careers: ["pe_vc"],
     take: "VC and PE track students.",
     outline: "partly",
   },
@@ -794,7 +879,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Investor panel marks vary.",
     learning: 4,
     learningWhy: "Useful for anyone thinking of founding, not only investors.",
-    careers: ["finance", "general_management"],
+    careers: ["pe_vc", "entrepreneurship"],
     take: "Founders-to-be.",
     outline: "yes",
     closedToQuestions: true,
@@ -817,7 +902,7 @@ export const REVIEWS: SeedReview[] = [
     learning: 5,
     learningWhy:
       "I came from engineering, and this was where I learned to write a PRD and defend priorities. I used the prioritisation exercise in my first product interview.",
-    careers: ["product"],
+    careers: ["product_management"],
     take: "Anyone switching into product, especially without a product title before ISB.",
     outline: "partly",
   },
@@ -837,7 +922,7 @@ export const REVIEWS: SeedReview[] = [
     riskWhy: "Predictable quizzes.",
     learning: 4,
     learningWhy: "Solid foundation in decision models that I already used in a case competition.",
-    careers: ["consulting", "general_management"],
+    careers: ["strategy_consulting", "strategy_bizops"],
     take: "Anyone who wants a structured quant course.",
     outline: "yes",
   },

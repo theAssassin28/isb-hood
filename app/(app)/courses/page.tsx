@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { CourseGridSkeleton } from "@/components/skeleton";
 import { CourseCardItem } from "@/components/course-card";
 import { CourseFilters } from "@/components/course-filters";
 import { CoursesClosedForYl } from "@/components/courses-closed";
-import { notice, pageColumn } from "@/components/styles";
+import { notice, pageWide } from "@/components/styles";
 import { SurveyPrompt } from "@/components/survey-prompt";
 import { TrackOnMount } from "@/components/track-on-mount";
 import { requireReader } from "@/lib/auth/session";
@@ -20,13 +21,13 @@ export const metadata: Metadata = { title: "Courses · ISB Hood" };
 
 export default function CoursesPage({ searchParams }: PageProps<"/courses">) {
   return (
-    <main className={pageColumn}>
+    <main className={pageWide}>
       <h1 className="type-title">Courses</h1>
-      <p className="mt-2 text-foreground/80">
+      <p className="mt-2 max-w-[65ch] text-foreground/80">
         What earlier batches said about workload, grading and teaching, by professor and term.
       </p>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-muted-foreground">Loading courses…</p>}>
+        <Suspense fallback={<CourseGridSkeleton />}>
           <CourseList searchParams={searchParams} />
         </Suspense>
       </div>
@@ -89,7 +90,7 @@ async function CourseList({
         <TrackOnMount key={JSON.stringify(params)} action={recordFilters.bind(null, chosen)} />
       ) : null}
 
-      <div className="mb-6 empty:hidden">
+      <div className="mb-6 max-w-xl empty:hidden">
         <SurveyPrompt />
       </div>
 
@@ -122,7 +123,7 @@ async function CourseList({
           </Link>
         </div>
       ) : (
-        <ul className="mt-4 space-y-4">
+        <ul className="mt-4 grid gap-4 lg:grid-cols-3">
           {shown.map((card) => (
             <CourseCardItem key={card.id} course={card} />
           ))}

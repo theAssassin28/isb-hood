@@ -60,15 +60,15 @@ The product note lists places, procedures and events as coverage areas. Research
 
 **Requirement (15 Nov):** the app runs on free plans wherever possible. Nothing in the MVP needs a paid plan. Limits below are from memory of each provider's free plan: check the current pricing page when creating each account.
 
-| Service       | Free plan constraint                                                                                                               | How the build works within it                                                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Vercel Hobby  | Personal, non-commercial use; cron jobs run at most once a day                                                                     | One daily cron does everything scheduled: digest emails, survey nudges, moderator reminder, keep-alive. Comment alerts are sent inline, not by cron                                                                                  |
-| Supabase Free | Two projects; small database; project pauses after about a week without activity; no automatic backups                             | One project for production, local PGlite for tests (no second cloud project needed). The daily cron touches the database so it never pauses. A scheduled GitHub Actions job runs `pg_dump` and stores the dump as a private artifact |
-| Gmail SMTP    | About 500 recipients a day; needs 2-step verification and an app password; a college Workspace account may not allow app passwords | Create a new personal Gmail for the project. 500 a day is far above what 400 students can generate. If it is ever hit, queue the rest for the digest                                                                                 |
-| PostHog Free  | Monthly event allowance far above our volume                                                                                       | Mirror only the spec events; the `events` table stays the source of truth                                                                                                                                                            |
-| GitHub        | Free Actions minutes are limited on private repos                                                                                  | CI runs in about a minute; fine                                                                                                                                                                                                      |
-| Google OAuth  | Free. An "External" app left in "Testing" only admits listed test users                                                            | Set the consent screen to "In production"; only email and profile scopes are requested, so no Google review is needed                                                                                                                |
-| Domain        | A custom domain costs money                                                                                                        | Use `isb-hood.vercel.app` (or the nearest free name). Not needed for Gmail SMTP                                                                                                                                                      |
+| Service                                    | Free plan constraint                                                                                                               | How the build works within it                                                                                                                                                                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Vercel Hobby                               | Personal, non-commercial use; cron jobs run at most once a day                                                                     | One daily cron does everything scheduled: digest emails, survey nudges, moderator reminder, keep-alive. Comment alerts are sent inline, not by cron                                                                                  |
+| Supabase Free                              | Two projects; small database; project pauses after about a week without activity; no automatic backups                             | One project for production, local PGlite for tests (no second cloud project needed). The daily cron touches the database so it never pauses. A scheduled GitHub Actions job runs `pg_dump` and stores the dump as a private artifact |
+| Gmail SMTP                                 | About 500 recipients a day; needs 2-step verification and an app password; a college Workspace account may not allow app passwords | Create a new personal Gmail for the project. 500 a day is far above what 400 students can generate. If it is ever hit, queue the rest for the digest                                                                                 |
+| PostHog Free                               | Monthly event allowance far above our volume                                                                                       | Mirror only the spec events; the `events` table stays the source of truth                                                                                                                                                            |
+| GitHub                                     | Free Actions minutes are limited on private repos                                                                                  | CI runs in about a minute; fine                                                                                                                                                                                                      |
+| Google OAuth (no longer used since 20 Nov) | Free. An "External" app left in "Testing" only admits listed test users                                                            | Set the consent screen to "In production"; only email and profile scopes are requested, so no Google review is needed                                                                                                                |
+| Domain                                     | A custom domain costs money                                                                                                        | Use `isb-hood.vercel.app` (or the nearest free name). Not needed for Gmail SMTP                                                                                                                                                      |
 
 Do not add a paid dependency without asking first. If something appears to need one (custom email domain, more frequent cron, larger database), write the constraint in `KNOWN_DEBT.md` and design around it.
 
@@ -123,37 +123,38 @@ isb-hood/
 
 **[decision]** An unverified non-ISB account sees nothing but its own drafts and a "thanks, we're verifying you" page. Otherwise the contributor link becomes a way round the ISB-only reader gate.
 
-**Domain restriction.** Google's `hd` parameter is only a hint. Enforce on the server in the auth callback: allow if the email domain is in `ALLOWED_READER_DOMAINS` (default `isb.edu`; **[confirm]** the exact domain(s) for PGP and PGP YL students), else treat as a contributor only if the session started from a contributor link, else reject with a friendly page that links to the contributor route.
+**Domain restriction.** Enforce on the server when the code is requested and again after it is verified: allow if the email domain is in `ALLOWED_READER_DOMAINS` (default `isb.edu`; **[confirm]** the exact domain(s) for PGP and PGP YL students), else treat as a contributor only if the session started from a contributor link, else reject with a friendly page that links to the contributor route.
 
 **Outreach links. [decision]** Campaign-level links, not per-person tokens: `/contribute?src=<campaign>&course=<courseId>`. Easier to paste into WhatsApp groups; verification is a manual name match against `outreach_contacts`. Per-person tokens are known debt.
 
-**A10 fallback is already the design:** contributors can use any Google account from day one, so "5 of 5 alumni publish" is a test of the flow, not of ISB email access.
+**A10 fallback is already the design:** contributors can sign in with any email address from day one, so "5 of 5 alumni publish" is a test of the flow, not of ISB email access.
 
 ---
 
 ## 4. Screens and flows
 
-Every screen has a loading, empty and error state. Layout target: 360 px wide phone first; desktop is the same column, wider. **Visual system (updated 17 Nov):** a blend of two Godly Templates designs (previews in `docs/design-previews/`). From Stella: the colours (near-black page `#0c0c0c`, `#141414` surfaces, `#262626` hairlines, white text, `#bababa` muted, one sky-blue accent `#87cefa` for actions only) and Geist for body text. From Kero: Hedvig Letters Serif at weight 400 for titles, 20px card corners, 12px fields and alerts, pill buttons and chips, and roomier spacing. Dark only. Four type sizes on a screen (32 / 20 / 16 / 14). Tokens live in `app/globals.css`, shared classes in `components/styles.ts`. 16 px minimum body text, 44 px minimum tap targets.
+Every screen has a loading, empty and error state. Layout target: 360 px wide phone first; from 1024 px a wide layout (see PRD 6.3). **Visual system (updated 17 Nov):** a blend of two Godly Templates designs (previews in `docs/design-previews/`). From Stella: the colours (near-black page `#0c0c0c`, `#141414` surfaces, `#262626` hairlines, white text, `#bababa` muted, one sky-blue accent `#87cefa` for actions only) and Geist for body text. From Kero: Hedvig Letters Serif at weight 400 for titles, 20px card corners, 12px fields and alerts, pill buttons and chips, and roomier spacing. Dark and light themes (light added 25 Nov; tokens in `app/globals.css`; sun/moon button at the top right, choice kept in `localStorage`, applied before paint by `lib/theme.ts`). Two layouts, phone below 1024 px and desktop from 1024 px (`lg:`), with shared widths in `components/styles.ts` (`shellWidth`, `pageWide` for browsing pages, `pageColumn` for forms and reading pages). One filled accent button per screen. Loading states use the placeholders in `components/skeleton.tsx`. Audit and re-audit against the Laws of UX: `docs/UX_AUDIT.md`. Four type sizes on a screen (32 / 20 / 16 / 14). Tokens live in `app/globals.css`, shared classes in `components/styles.ts`. 16 px minimum body text, 44 px minimum tap targets.
 
 ### 4.1 Route map
 
-| Route                                    | Screen                                                                                            | Access                        |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `/signin`                                | Sign in (Google), one line on what the site is                                                    | Public                        |
-| `/contribute`                            | Contributor landing: what we're asking, 5 minutes, how identity is shown, "Continue with Google"  | Public                        |
-| `/onboarding`                            | Profile form (first visit)                                                                        | Signed in, profile incomplete |
-| `/`                                      | Home: Courses, Careers, search, "Write a review"                                                  | App                           |
-| `/courses`                               | Course list with filters and sort                                                                 | App                           |
-| `/courses/[id]`                          | Course page: banner, summary block, reviews, comments                                             | App                           |
-| `/careers`                               | Career list: filters, "Like me" toggle, playbook and company-note cards                           | App, gated by settings        |
-| `/careers/[id]`                          | Entry page with author line and comments                                                          | App, gated                    |
-| `/write`                                 | Chooser: course review, playbook, company note                                                    | App                           |
-| `/write/course-review?course=`           | F1 form → preview → publish                                                                       | App                           |
-| `/write/playbook`, `/write/company-note` | F3 forms                                                                                          | App, gated                    |
-| `/me`                                    | My entries, questions waiting for my reply, edit, delete, notification preference, delete account | App                           |
-| `/survey/post-bid`, `/survey/career`     | Surveys (also shown as an in-app prompt)                                                          | App                           |
-| `/rules`, `/privacy`                     | Content rules, what we store and do not store                                                     | Public                        |
-| `/admin/*`                               | Queue, verification, courses and offerings, outreach list, metrics, settings                      | Moderator                     |
+| Route                                    | Screen                                                                                                                                                         | Access                        |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `/signin`                                | Sign in with an emailed 6-digit code; title and one line on what the site is, the sign-in card, then the student-led context and the contributor link          | Public                        |
+| `/contribute`                            | Contributor landing: what we're asking, 5 minutes, how identity is shown; sign in with a code sent to any email                                                | Public                        |
+| `/onboarding`                            | Profile form (first visit)                                                                                                                                     | Signed in, profile incomplete |
+| `/`                                      | Home: Courses, Careers, search, "Write a review"                                                                                                               | App                           |
+| `/courses`                               | Course list with filters and sort                                                                                                                              | App                           |
+| `/courses/[code]`                        | Course page at its course code (`/courses/MKT-501`, any case; older id URLs redirect, keeping `?thread` and `?prof`): banner, summary block, reviews, comments | App                           |
+| `/careers`                               | Career list: filters, "Like me" toggle, playbook and company-note cards                                                                                        | App, gated by settings        |
+| `/careers/[id]`                          | Entry page with author line and comments                                                                                                                       | App, gated                    |
+| `/write`                                 | Chooser: course review, playbook, company note                                                                                                                 | App                           |
+| `/write/course-review?course=`           | F1 form → preview → publish                                                                                                                                    | App                           |
+| `/write/playbook`, `/write/company-note` | F3 forms                                                                                                                                                       | App, gated                    |
+| `/me`                                    | My entries, questions waiting for my reply, edit, delete, notification preference, delete account                                                              | App                           |
+| `/survey/post-bid`, `/survey/career`     | Surveys (also shown as an in-app prompt)                                                                                                                       | App                           |
+| `/rules`, `/privacy`                     | Content rules, what we store and do not store                                                                                                                  | Public                        |
+| `/admin/*`                               | Queue, verification, courses and offerings, outreach list, metrics, settings                                                                                   | Moderator                     |
+| `/sample-accounts`                       | Prototype only: the sample people by side (seekers, contributors, other states); 404 when Supabase keys are set                                                | Public, demo mode only        |
 
 ### 4.2 Onboarding (F6)
 
@@ -184,12 +185,12 @@ Order top to bottom:
 3. **Summary block** (rules in 6.1): review count; median weekly workload; evaluation mix; quant-to-qual score; grade-risk split; learning value with agreement level; share who said the outline matched; top 3 "who should take it" and top 3 "who should skip it" lines.
 4. Individual reviews, newest first, each tagged with professor and term, author line ("Name, Co'26" or "Verified Co'26 student"), all text answers, and its comment thread collapsed with a count.
 5. Per review: "Ask the author" (if open to questions), "Request a chat" fake door, flag.
-6. Sticky footer on phone: "Took this course? Add your review."
+6. Phone: the write button pinned above the bottom tab bar ("Took this course? Add your review."). From 1024 px: the same order as on phones (summary, then all reviews) with cards at the full page width (written answers capped at `max-w-[60ch]`, about 75 characters per line); the summary's four facts sit in one row; the write button is pinned to the bottom of the window.
 
 ### 4.5 Write flow (F1, F3)
 
-- One question group per step on phone (4 short steps for the course review), a visible progress bar, and **autosave of drafts to the server on every step** so a contributor who leaves WhatsApp and comes back loses nothing.
-- Course, professor and term are preselected from the link where possible; professor and term are chosen from that course's offerings, with "My professor or term is not listed" → free text that creates a pending offering for a moderator to approve.
+- One question group per step on phone (4 short steps for the course review), a visible progress bar, and **autosave of drafts to the server** at the end of every step and 2.5 s after the last change, so a contributor who leaves WhatsApp and comes back loses nothing. Saves run one at a time; background saves pass `autosave: true` and do not log `form_step_completed`.
+- Course, professor and term are preselected from the link where possible, and the professor and term are preselected when the course has exactly one confirmed offering; otherwise they are chosen from that course's offerings, with "My professor or term is not listed" → free text that creates a pending offering for a moderator to approve.
 - Every rating has its reason field directly beneath it; publish is blocked without it. Star-only reviews cannot exist.
 - Running total under the evaluation mix; must equal 100 to continue.
 - Visibility step: "Show my name" or "Verified Co'XX student", with one sentence: "Moderators can always see who wrote an entry." Open-to-questions toggle, default on.
@@ -223,14 +224,14 @@ Button → log `fake_door_clicked` → sheet: "Coming soon. Want early access?" 
 
 ### 4.10 Admin
 
-| Page         | What it does                                                                                                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Queue        | Flagged items oldest first with age (24-hour target), actions: keep, remove, edit-request to author                                                                      |
-| Verification | Pending contributors with their Google name, email, claimed cohort, and suggested matches from the outreach list; verify (publishes all their pending entries) or reject |
-| Courses      | CSV import and inline edit of courses and offerings; set `is_current`; approve pending offerings; per-course "open to readers" switch                                    |
-| Outreach     | CSV import of contacts (name, cohort, optional email, course asked about); shows who has contributed                                                                     |
-| Metrics      | Every pass line, live (section 8)                                                                                                                                        |
-| Settings     | Dates and gates (section 7)                                                                                                                                              |
+| Page         | What it does                                                                                                                                                              |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Queue        | Flagged items oldest first with age (24-hour target), actions: keep, remove, edit-request to author                                                                       |
+| Verification | Pending contributors with the name they gave, email, claimed cohort, and suggested matches from the outreach list; verify (publishes all their pending entries) or reject |
+| Courses      | CSV import and inline edit of courses and offerings; set `is_current`; approve pending offerings; per-course "open to readers" switch                                     |
+| Outreach     | CSV import of contacts (name, cohort, optional email, course asked about); shows who has contributed                                                                      |
+| Metrics      | Every pass line, live (section 8)                                                                                                                                         |
+| Settings     | Dates and gates (section 7)                                                                                                                                               |
 
 ---
 
@@ -294,7 +295,7 @@ filterable columns: `track`, `company` (nullable), `from_function`, `from_indust
 | Teaching style                    | Multi-select: case discussion, lecture, workshop, guest-heavy, project                         | 1+                     |
 | Grade risk                        | Low, medium, high + reason                                                                     | Reason required        |
 | Learning value                    | 1 to 5 + reason                                                                                | Reason 40+ characters  |
-| Careers it helps                  | Multi-select tracks                                                                            | Optional               |
+| Careers it helps                  | Multi-select specific career paths, grouped by track (5.5)                                     | Optional               |
 | Who should take it / skip it      | Two short texts                                                                                | At least one           |
 | Did the outline match?            | Yes, partly, no                                                                                | Required               |
 | Visibility; open to questions     | Two toggles                                                                                    | Required; default open |
@@ -344,6 +345,7 @@ Grades, salaries, offer amounts, phone numbers. No free-text field is labelled i
 ### 5.5 Controlled vocabularies (one constants file)
 
 - **Tracks:** consulting, product, finance, general management or strategy, marketing, other
+- **Career paths** (for "Careers it helps", added 26 Nov; each under a track): consulting: strategy, tech and digital, operations · product: product management, growth and product analytics · finance: investment banking, corporate finance and M&A, FP&A, private equity and VC, markets and asset management, risk · general management: GM programmes, strategy and BizOps, entrepreneurship · marketing: brand management, digital and performance, sales and category management · other. Stored as path values; older reviews may hold a bare track value, which still reads as the track. The course filter "Helps for" and the onboarding target track stay at the track level.
 - **Functions:** consulting, engineering/technology, product, finance/accounting, sales/BD, marketing, operations/supply chain, analytics/data, HR, entrepreneurship, public sector/social, other
 - **Industries:** IT/software, BFSI, consulting, manufacturing, FMCG/retail, healthcare/pharma, energy/infra, e-commerce/internet, government/non-profit, other
 - **Company type:** MBB/consulting, big tech, startup/scale-up, bank/NBFC/fund, conglomerate/GM programme, FMCG, other
@@ -445,7 +447,7 @@ Show when the course has zero live reviews, **or** no live review is attached to
 | `filter_used`         | Any filter or "Like me"            | filter_name                                         |
 | `fake_door_clicked`   | Either fake door                   | door, entry_id, left_contact                        |
 
-Also log, as diagnostics not in the spec: `form_started` and `form_step_completed` (to find where contributors drop), `survey_shown`, `survey_submitted`. One `track()` helper in `lib/domain/events.ts`; no ad hoc event names.
+Also log, as diagnostics not in the spec: `form_started` and `form_step_completed` (to find where contributors drop; only when a step is completed, never for background saves), `survey_shown`, `survey_submitted`. One `track()` helper in `lib/domain/events.ts`; no ad hoc event names.
 
 ### 8.2 `/admin/metrics`: one row per pass line
 
@@ -482,7 +484,7 @@ Dates assume one builder working with Claude Code. Each milestone ends deployed 
 
 ### M1 · Sign-in and profile (F6) · 18 to 20 Nov
 
-- Google OAuth through Supabase; server-side domain check; contributor route with `src` and `course` carried through the redirect.
+- Sign-in by emailed 6-digit code through Supabase (replaced Google OAuth on 20 Nov); server-side domain check; contributor route with `src` and `course` carried through sign-in.
 - Onboarding form; `user_signed_up`; route guards (incomplete profile → onboarding; unverified contributor → limited shell; moderator-only admin).
 - Admin verification page with outreach-list matching.
 - **Done when:** an ISB account, a non-ISB account from `/contribute`, and a non-ISB account from `/signin` each land where section 3 says; verifying a contributor flips their pending entries to live.
@@ -604,7 +606,7 @@ The concierge fallback needs one thing from the build: **moderators can enter a 
 | Term 7 course list published late | Course pages cannot be seeded by 7 Dec        | Seed from last year's Term 7 list; "not listed" offering path; fix `is_current` when the list lands                                                    |
 | ISB objects to faculty reviews    | Launch blocked                                | Meet AAC/ASA before 6 Dec; rules page; course-not-person rule in every form; fast removal                                                              |
 | An anonymous author is exposed    | Trust gone, supply gone                       | Server-only reads, views without `author_id`, automated leak test, "Author" label on replies                                                           |
-| Alumni cannot or will not sign in | A10 fails                                     | Any Google account already allowed; test with 5 alumni in week 3; concierge entry as backstop                                                          |
+| Alumni cannot or will not sign in | A10 fails                                     | Any email address already allowed; test with 5 alumni in week 3; concierge entry as backstop                                                           |
 | Emails go to spam                 | Reply rate (A4) reads falsely low             | Plain-text emails from a real Gmail address (no custom domain on the free plan), check deliverability in M4; in-app "questions waiting" on My activity |
 | Too few survey responses          | Result inconclusive                           | In-app prompt plus email plus one reminder; team chases in section groups; survey is three taps                                                        |
 | Readers arrive to thin pages      | Outcome looks worse than the idea is          | `min_reviews_to_open_course` gate; clear "Based on N reviews"                                                                                          |
@@ -614,17 +616,17 @@ The concierge fallback needs one thing from the build: **moderators can enter a 
 
 ## 13. Open questions
 
-| #   | Question                                                                                       | Needed by   | Default if unanswered                             |
-| --- | ---------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------- |
-| 1   | Exact ISB email domain(s) for PGP and PGP YL students                                          | M1 (18 Nov) | `isb.edu`, list is a setting                      |
-| 2   | Do alumni keep ISB email access?                                                               | M6          | Assume no; any-Google route is built anyway       |
-| 3   | When are Term 7 courses and professors published?                                              | 7 Dec       | Seed from last year's list                        |
-| 4   | Do PGP YL students take the same electives, and when do they bid?                              | 21 Dec      | Read-only access to the same pages                |
-| 5   | Does ISB administration need to approve faculty-related reviews? Who owns the AAC/ASA meeting? | 6 Dec       | Proceed with the content rules; keep removal fast |
-| 6   | Official Hyderabad batch size (interviewees said about 400)                                    | Write-up    | Report as interviewee figure                      |
-| 7   | Term buckets for the playbook path                                                             | M7          | Early 1-3, mid 4-5, late 6-8                      |
-| 8   | Final vocabularies for function, industry, track, company type                                 | 17 Nov      | Lists in 5.5                                      |
-| 9   | Who are the moderators, and who is on call each day of the drive?                              | 6 Dec       | All five team members                             |
+| #   | Question                                                                                       | Needed by   | Default if unanswered                                      |
+| --- | ---------------------------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------- |
+| 1   | Exact ISB email domain(s) for PGP and PGP YL students                                          | M1 (18 Nov) | `isb.edu`, list is a setting                               |
+| 2   | Do alumni keep ISB email access?                                                               | M6          | Assume no; the any-email contributor route is built anyway |
+| 3   | When are Term 7 courses and professors published?                                              | 7 Dec       | Seed from last year's list                                 |
+| 4   | Do PGP YL students take the same electives, and when do they bid?                              | 21 Dec      | Read-only access to the same pages                         |
+| 5   | Does ISB administration need to approve faculty-related reviews? Who owns the AAC/ASA meeting? | 6 Dec       | Proceed with the content rules; keep removal fast          |
+| 6   | Official Hyderabad batch size (interviewees said about 400)                                    | Write-up    | Report as interviewee figure                               |
+| 7   | Term buckets for the playbook path                                                             | M7          | Early 1-3, mid 4-5, late 6-8                               |
+| 8   | Final vocabularies for function, industry, track, company type                                 | 17 Nov      | Lists in 5.5                                               |
+| 9   | Who are the moderators, and who is on call each day of the drive?                              | 6 Dec       | All five team members                                      |
 
 ---
 

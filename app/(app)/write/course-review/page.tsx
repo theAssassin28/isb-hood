@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { notice, pageColumn, primaryButton } from "@/components/styles";
 import { safeCourseId } from "@/lib/auth/access";
 import { requireWriter } from "@/lib/auth/session";
@@ -18,7 +19,7 @@ export const metadata: Metadata = { title: "Write a review · ISB Hood" };
 export default function WriteCourseReviewPage({ searchParams }: PageProps<"/write/course-review">) {
   return (
     <main className={pageColumn}>
-      <Suspense fallback={<p className="text-muted-foreground">Loading the form…</p>}>
+      <Suspense fallback={<StackSkeleton label="Loading the form…" />}>
         <Editor searchParams={searchParams} />
       </Suspense>
     </main>

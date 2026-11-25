@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "ISB email needed · ISB Hood" };
 
 export default function NotIsbPage() {
   return (
-    <>
+    <div className="mx-auto w-full max-w-xl">
       <h1 className="type-title">That was not an ISB email address</h1>
       <p className="mt-2 text-foreground/80">
         Reading ISB Hood needs an ISB account. We have not kept the account you just used.
@@ -20,6 +20,6 @@ export default function NotIsbPage() {
           I am an alum and want to contribute
         </Link>
       </div>
-    </>
+    </div>
   );
 }

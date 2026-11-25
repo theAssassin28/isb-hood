@@ -1,6 +1,6 @@
 # ISB Hood: Product Requirements Document
 
-**Version:** 1.0 · **Date:** 22 Nov 2026 · **Author:** CT
+**Version:** 1.1 · **Date:** 26 Nov 2026 · **Author:** CT
 **Team:** SWPM Group 12, Section B, ISB Hyderabad: Chinmay Thakare, Padarabinda Palai, Rajashree Pati, Shivam Singh, Sri Akhil Mylavarapu
 
 **How this document relates to the repo**
@@ -10,6 +10,14 @@
 - `docs/source/extracted/mvp_requirements.txt` is the original spec (v0.2). This PRD supersedes it.
 - Items marked **[not built yet]** were decided after the build plan was written and need code.
 - Items marked **[confirm]** need a team decision.
+
+**What changed in 1.1 (26 Nov 2026)**
+
+- Two layouts (phone below 1024px, desktop from 1024px) and two themes (dark and light) (6.3).
+- New sign-in page with the project's student-led context (6.1); in the prototype, any 6-digit code works (5.4, "Prototype").
+- Four primary personas for the prototype, two information seekers and two contributors, each one tap from the sign-in page, with a demo script behind a floating "Demo script" button (it opens by itself on a persona's first visit); walkthroughs in `docs/PERSONAS.md` (13.2).
+- Course pages live at their course code (`/courses/MKT-501`) (6.1).
+- A Laws of UX audit of every screen and its 10 fixes, in `docs/UX_AUDIT.md`; the review form now saves as you type (5.4, 13.1).
 
 ---
 
@@ -183,7 +191,7 @@ ISB Hood's differences: **reasons, not ratings** (every entry says why); **many 
 
 | ID | Feature | Core functionality | Telemetry | Error and edge cases | Status |
 | --- | --- | --- | --- | --- | --- |
-| F1 | Course review form | 4 steps, autosave to server, preview, publish, edit, delete; named or "Verified Co'XX"; open-to-questions toggle; course preselected from link | `form_started`, `form_step_completed`, `entry_submitted` (`form_seconds`) | Rating with no reason cannot publish; evaluation mix must total 100; closed tab restores draft; "my professor or term is not listed" creates a pending offering | Built |
+| F1 | Course review form | 4 steps with a progress bar; the draft saves to the server as you type (2.5 s after the last change) and at each step; preview, publish, edit, delete with an in-page confirmation; named or "Verified Co'XX"; open-to-questions toggle; course preselected from link; the professor and term preselected when there is only one | `form_started`, `form_step_completed` (step ends only, not background saves), `entry_submitted` (`form_seconds`) | Rating with no reason cannot publish; evaluation mix must total 100; closed tab restores the draft; "my professor or term is not listed" creates a pending offering | Built |
 | F2 | Course page | Header, "new or changed" banner, summary block (workload, evaluation mix, quant/qual, grade risk, learning value with agreement, outline match, top 3 take/skip), reviews newest first | `course_page_viewed`, `value_reached` | Under 3 reviews: "Based on N reviews", agreement hidden; zero reviews: invite to write | Built |
 | F3 | Career entries | Track playbook and company note on the same step/autosave/preview components | `entry_submitted`, `career_entry_viewed` | Pay-figure soft check; gated by settings | Not built (M7, 7 to 20 Dec) |
 | F4 | Career filter | Track, company, background; "Like me" toggle | `filter_used` | Gated by settings | Not built (M7) |
@@ -194,6 +202,7 @@ ISB Hood's differences: **reasons, not ratings** (every entry says why); **many 
 | F8a, F9a | Fake doors | "Request a chat" (on entries), "Find people like me" (on career list) open an early-access sheet | `fake_door_clicked` (`left_contact`) | Sheet says it is not built yet; offers "ask a public question instead" | Built; F9a placed with M7 |
 | Mod | Moderation | Flag with reason; queue with age (red past 20 hours); keep, remove, request edit; content rules page | Flag logged | Flagged content stays visible until checked | Built |
 | Admin | Admin pages | Verification, courses and offerings CSV, outreach list, metrics, settings | n/a | Moderators only | Built |
+| Proto | Prototype mode | Runs with no Supabase keys, on sample data in `lib/demo/seed-data.ts`. Sign-in runs every email check but sends no email, and any 6-digit code signs in: a sample person's email signs in as them, any other address makes a new account. A "Testing the prototype? Start here" panel on sign-in with the four primary personas; a numbered demo script for each, in a side panel opened from a floating "Demo script" button at the bottom right of every app page (open by itself on a persona's first visit, then on demand); a strip on every page saying who you are, with "Switch persona" and "Reset"; a "Sample accounts" page | None (no PostHog, no email) | Turns off by itself once Supabase keys are set; it is never part of the real sign-in | Built (for demos and usability tests only) |
 | Share | Share-to-WhatsApp link | Share a course page; opens for people not signed in show a preview and sign-in | `share_link_opened` | No entry text visible without sign-in | **[not built yet]**, P1 |
 
 Full field specs, aggregation rules and data model: `docs/BUILD_PLAN.md` sections 4 to 7.
@@ -214,17 +223,18 @@ Full field specs, aggregation rules and data model: `docs/BUILD_PLAN.md` section
 
 | Route | Screen | Access |
 | --- | --- | --- |
-| `/signin` | Sign in with emailed code; one line on what the site is | Public |
+| `/signin` | Sign in with emailed code; the title and one line on what the site is, then the sign-in card, then the student-led context (Group 12, research figures) and the contributor link. Desktop: story left, sign-in right | Public |
 | `/contribute` | Contributor landing: what we ask, 5 minutes, how identity is shown | Public |
 | `/onboarding` | Profile: programme, cohort, pre-MBA function and industry, years, target track, source | First visit |
 | `/` | Home: Courses, Careers, search, "Write a review" | App |
-| `/courses`, `/courses/[id]` | Course list with filters; course page | App |
+| `/courses`, `/courses/[code]` | Course list with filters; course page at its course code, e.g. `/courses/MKT-501` (older id links redirect) | App |
 | `/careers`, `/careers/[id]` | Career list with "Like me"; entry page | App, gated |
 | `/write`, `/write/course-review` | Chooser; review form | App |
 | `/write/playbook`, `/write/company-note` | Career forms | App, gated |
 | `/me` | My entries, questions waiting, edit, delete, notification preference, delete account | App |
 | `/survey/post-bid`, `/survey/career` | Surveys | App |
 | `/rules`, `/privacy` | Content rules; what we store and never store | Public |
+| `/sample-accounts` | The sample people, grouped as information seekers, contributors and other states; continue as anyone in one tap ("Switch persona" in the strip) | Prototype only |
 | `/admin/*` | Queue, verification, courses, outreach, metrics, settings | Moderator |
 
 ### 6.2 Core journeys
@@ -241,15 +251,24 @@ Full field specs, aggregation rules and data model: `docs/BUILD_PLAN.md` section
 
 ### 6.3 Visual system
 
-Dark only. Stella's colours with Kero's shapes and serif titles.
+Stella's colours with Kero's shapes and serif titles, in two themes: dark (the reference) and light. The app follows the phone or computer's setting. A sun/moon button at the top right of every screen switches theme and is remembered in that browser; choosing the theme the system already uses goes back to following the system. The phone's address bar takes the same colour.
 
-- Page `#0c0c0c`, surfaces `#141414`, hairlines `#262626`, white text, muted `#bababa`, one sky-blue accent `#87cefa` **only for things you can tap**. Selected chips: white on dark.
+- Dark: page `#0c0c0c`, surfaces `#141414`, hairlines `#262626`, white text, muted `#bababa`, one sky-blue accent `#87cefa` **only for things you can tap**. Selected chips: white on dark.
+- Light: page `#f5f5f5`, surfaces `#ffffff`, hairlines `#e2e2e2`, near-black text, muted `#595959`, accent `#0a6aa6` (sky blue is too faint on white). Selected chips: dark on light. Every text pair 4.5:1 or better in both themes.
 - Body: Geist. Titles: Hedvig Letters Serif, weight 400.
 - Corners: 20px cards, 12px fields, alerts and inner panels, pill buttons and chips.
 - Four type sizes per screen: 32 / 20 / 16 / 14. Minimum 16px body text, 44px tap targets.
-- Phone first, 360px wide; desktop is the same column, wider.
+- Phone first, 360px wide. Two layouts, no tablet step:
+  - Under 1024px: one column; a bottom tab bar (Home, Courses, Write, Activity, plus Admin for moderators); the course page's write button pinned above the tab bar.
+  - From 1024px: a header with the sections and a course search pill; Home and the course list as card grids (3 columns); the course page in the same order as on phones, its cards at the full page width (written answers inside reviews keep about 75 characters per line): summary ("What reviewers say", its four facts in one row), then all reviews, with the write button pinned to the bottom of the window; sign-in and contributor pages split into story and sign-in.
+  - Forms and reading pages (review form, onboarding, My activity, surveys, rules, privacy) stay one readable column at every width.
+- **One filled accent button per screen**, the screen's main action. Other actions are outline buttons or text links.
 - Use tokens in `app/globals.css` and class strings in `components/styles.ts` (`type-title`, `type-heading`, `type-label`, `type-tag`, `type-status`). No new colours or shadows.
-- Every screen has loading, empty and error states.
+- Every screen has loading, empty and error states. Loading shows grey placeholders shaped like the content, so nothing jumps when data arrives.
+- Inside a review: the four facts, then the reviewer's written answers (outline gap, who should take it, who should skip it, then the reasons), then the evaluation mix, then one compact labelled block (teaching style, careers it helps, why they took it, outline match). It uses the "What reviewers say" card's formatting: quiet labels (14px, muted) over semibold values, the same evaluation bar and legend, and spacing instead of lines between sections, so the reviewer's words stay the strongest text. Bold capitals and hairline dividers were tried and dropped (`docs/UX_AUDIT.md`).
+- Course page: a "Read the N reviews ↓" link under the title jumps past the summary. The questions control is always "Ask the author" (with "· N questions" when there are any); the author sees "Questions from readers".
+- Career paths ("who should take it") are specific, one level under the track (for example Investment banking, Corporate finance and M&A, FP&A under Finance; list in `docs/BUILD_PLAN.md` 5.5). They show as pills, one path each, side by side: on course list cards (most named first), in "What reviewers say" (with how many reviewers named each; the written take and skip lines are not repeated there, they are in each review) and in each review.
+- Phones: with the bottom tab bar, the page scrolls in an area that ends at the top of the tab bar, so the scrollbar never runs behind the menu; each new page starts at the top. The page does not rubber-band past its top or bottom. The "Content rules" and "Privacy" links show only at the end of the sign-in page and My activity (on desktop they are the footer of every page); the review form also links to the content rules.
 - Outside material (decks, posters) uses ISB navy and teal instead; the app does not.
 
 ---
@@ -362,6 +381,7 @@ All events are written server-side to our own `events` table (source of truth) a
 | Emails land in spam | Reply rate reads low | Plain-text email from a real Gmail account; in-app "questions waiting" |
 | Too few survey answers | Under 30 responses | Prompt, email, reminder; chase in section groups |
 | Term 7 list published late | Pages cannot be seeded by 7 Dec | Seed from last year's list; "not listed" offering path |
+| Prototype sign-in reaches real users | Anyone can sign in with any code | Prototype mode switches off whenever Supabase keys are set; check `/sample-accounts` returns "not found" on the live site before launch |
 
 ---
 
@@ -409,6 +429,9 @@ Free for students. A paywall would cut the supply the product depends on.
 | 5 | Who owns the AAC/ASA meeting, and when? | Proceed with content rules; keep removal fast |
 | 6 | Moderator on-call rota during the drive | All five team members |
 | 7 | Final vocabularies for function, industry, track, company type | Lists in BUILD_PLAN 5.5 |
+| 8 | Survey prompt says the answer "decides whether this continues" (UX audit ethics flag: mild pressure). Soften it? | Suggested: "tells us whether this helped" |
+| 9 | The five "needs user research" items in `docs/UX_AUDIT.md` (summary or reviews first on phones; grid or comparison table; tab bar while writing; theme button without a label; survey wording) | Test in the 5-student usability test before 6 Dec |
+| 10 | The specific career paths under each track (BUILD_PLAN 5.5) are a first cut. Right list? | Use it for the drive; rename freely, but values are hard to change once reviews exist |
 
 ---
 
@@ -418,8 +441,10 @@ Use this section when designing new screens, writing sample content or creating 
 
 ### 13.1 Rules
 
-- Follow the visual system in 6.3 exactly. No new colours, shadows or type sizes.
-- Phone first (360px). Every new screen needs loading, empty and error states.
+- Follow the visual system in 6.3 exactly. No new colours, shadows or type sizes; one filled accent button per screen.
+- Phone first (360px). Check every new screen in both layouts (375px and 1440px) and both themes. Every new screen needs loading (shaped placeholders), empty and error states.
+- Tap targets at least 44px; any new colour pair at least 4.5:1 for text and 3:1 for borders and charts, in both themes.
+- After a set of new screens, re-run the Laws of UX audit and add the results to `docs/UX_AUDIT.md`.
 - Do not design or stub out-of-scope features (5.2). Chat and people finder appear only as fake-door buttons and the early-access sheet.
 - Never show, collect or imply grades, salaries, offer amounts or phone numbers.
 - Anonymous entries show "Verified Co'XX student"; replies by that author show "Author".
@@ -429,7 +454,16 @@ Use this section when designing new screens, writing sample content or creating 
 
 - **All personas and sample people must be fictional.** Never use the names of real interviewees or classmates, and do not reuse verbatim interview quotes as sample review text.
 - Sample faculty: "Prof A", "Prof B" and so on. Sample courses can use real-sounding titles but no real course codes tied to real faculty.
-- Existing demo people in `lib/demo/seed-data.ts` (keep them consistent):
+- **Primary personas** for the prototype, built from 3.1 (profiles filled, so sign-in goes straight to Home). Emails, situations and step-by-step walkthroughs, including a two-window "both sides" script, are in `docs/PERSONAS.md`:
+
+| Persona | Side | Based on | Email |
+| --- | --- | --- | --- |
+| Ananya Kulkarni, PGP Co'27, ex risk consultant | Information seeker | Elective Optimiser (J1) | `ananya.kulkarni@isb.edu` |
+| Arjun Bhatia, PGP Co'27, CA and ex-banker moving into product | Information seeker | Career Pivoter (J2, J4); a question waits on Karan's review | `arjun.bhatia@isb.edu` |
+| Karan Malhotra, Co'26 alum, now a product manager, personal email | Contributor | Senior or Alum Guide (J5); a live review and Arjun's question waiting | `karan.malhotra@example.com` |
+| Ishita Sharma, PGP Co'27, finished Business Analytics in Term 5 | Contributor | A Co'27 student reviewing a finished course | `ishita.sharma@isb.edu` |
+
+- Other demo people in `lib/demo/seed-data.ts` show other states (keep them consistent):
 
 | Demo person | Role | Shows |
 | --- | --- | --- |
@@ -442,7 +476,8 @@ Use this section when designing new screens, writing sample content or creating 
 | Rohan | New student | Onboarding |
 
 - **Name clash to fix [confirm]:** the research personas use "Meera" (PGP YL) and "Rohan" (alum guide), while the demo uses Meera Das (YL, consistent) and Rohan (new student, different role). Pick one meaning for Rohan before the term-end demo.
-- New personas should cover the gaps the demo does not yet show: a career pivoter using "Like me" (F4), a PGP YL first-year asking a Co'27 author, and a Co'27 student writing about a course they finished.
+- Gaps still open: Arjun's "Like me" story waits for F3 and F4 (he uses course reviews until then), and there is no PGP YL first-year asking a Co'27 author yet (Meera asks a Co'26 alum). The Co'27 writer gap is covered by Ishita.
+- Sample faculty in the seed data still use surnames ("Prof Sen", "Prof Bhatt") from before the "Prof A, Prof B" rule. **[confirm]** rename them before the term-end demo.
 
 ### 13.3 Screens most worth designing next
 
@@ -462,3 +497,4 @@ Use this section when designing new screens, writing sample content or creating 
 - Assignment 1 persona submissions and interview transcripts (team folder)
 - Assignment 3 deck: GAME framework, North Star, strategy, roadmap, backlog
 - `docs/BUILD_PLAN.md`, `docs/KNOWN_DEBT.md`, `docs/RUNBOOK.md`
+- `docs/PERSONAS.md` (prototype personas and walkthroughs), `docs/UX_AUDIT.md` (Laws of UX audit and re-audit, 25 Nov 2026)

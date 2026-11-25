@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { notice, pageColumn } from "@/components/styles";
 import { TrackOnMount } from "@/components/track-on-mount";
 import { requireReader } from "@/lib/auth/session";
@@ -19,7 +20,7 @@ export default function PostBidSurveyPage() {
         Under a minute. Honest answers help most, including “no effect”.
       </p>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading…" />}>
           <Survey />
         </Suspense>
       </div>

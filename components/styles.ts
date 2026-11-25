@@ -15,6 +15,9 @@ export const primaryButtonInline = primaryButton.replace("w-full", "w-auto shrin
 /** Secondary (Stella outline, Kero pill): transparent with an ink outline. */
 export const secondaryButton = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-foreground bg-transparent px-5 text-base font-medium text-foreground hover:opacity-86 ${press}`;
 
+/** Secondary button sized to its label, e.g. beside an input or in a prompt. */
+export const secondaryButtonInline = `${secondaryButton} shrink-0`;
+
 export const dangerButton = `inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-critical bg-transparent px-5 text-base font-medium text-critical hover:opacity-86 ${press}`;
 
 /** Quiet text action: a link-styled button in the accent. */
@@ -48,6 +51,17 @@ export const warnCallout = "rounded-md border border-warn bg-card p-4";
 
 export const errorBox = "rounded-md border border-critical bg-card p-3 text-sm text-foreground";
 
+// Widths. Phone first (one column, 16px gutters); from 1024px the shell and
+// browsing pages widen like a listings site, while forms and reading pages
+// keep a readable column centred under the wide header.
+
+/** Shell width: header, tab rows, banner and footer share it so edges line up. */
+export const shellWidth = "mx-auto w-full max-w-6xl px-4 lg:px-8";
+
+/** Browsing pages (home, course list, course page): the full shell width. */
+export const pageWide = `${shellWidth} flex flex-1 flex-col pt-8 pb-12`;
+
+/** Forms and reading pages: one readable column. */
 export const pageColumn = "mx-auto flex w-full max-w-xl flex-1 flex-col px-4 pt-8 pb-12";
 
 /** Page title: Kero serif, 32px on phones. */

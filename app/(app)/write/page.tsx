@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { MyReviewsList } from "@/components/my-reviews";
 import { notice, pageColumn } from "@/components/styles";
 import { requireWriter } from "@/lib/auth/session";
@@ -18,7 +19,7 @@ export default function WritePage() {
         About 5 minutes. Your answers are saved as you go, so you can stop and come back.
       </p>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-muted-foreground">Loading courses…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading courses…" />}>
           <Write />
         </Suspense>
       </div>

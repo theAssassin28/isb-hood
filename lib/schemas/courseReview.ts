@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  CAREER_PATHS,
   EVALUATION_COMPONENTS,
   TEACHING_STYLES,
   TRACKS,
@@ -18,6 +19,9 @@ const MAX_SHORT = 300;
 
 const values = <T extends string>(list: readonly { value: T }[]) =>
   list.map((o) => o.value) as [T, ...T[]];
+
+// Specific career paths, plus the bare track values older reviews may hold.
+const CAREER_VALUES = [...values(CAREER_PATHS), ...values(TRACKS)] as [string, ...string[]];
 
 export type EvalKey = (typeof EVALUATION_COMPONENTS)[number]["value"];
 export const EVAL_KEYS = EVALUATION_COMPONENTS.map((c) => c.value) as EvalKey[];
@@ -112,7 +116,7 @@ const publishSchema = z.object({
     .trim()
     .min(MIN_REASON_CHARS, `Write at least ${MIN_REASON_CHARS} characters`)
     .max(MAX_TEXT, `Keep this under ${MAX_TEXT} characters`),
-  careers_helped: z.array(z.enum(values(TRACKS))),
+  careers_helped: z.array(z.enum(CAREER_VALUES)),
   who_should_take: z.string().trim().max(MAX_SHORT, `Keep this under ${MAX_SHORT} characters`),
   who_should_skip: z.string().trim().max(MAX_SHORT, `Keep this under ${MAX_SHORT} characters`),
   outline_match: z.enum(["yes", "partly", "no"], { error: "Choose one" }),
@@ -226,7 +230,7 @@ const draftSchema = z.object({
   grade_risk_reason: draftText,
   learning_value: z.number().int().min(1).max(5).nullable(),
   learning_value_reason: draftText,
-  careers_helped: z.array(z.enum(values(TRACKS))).max(TRACKS.length),
+  careers_helped: z.array(z.enum(CAREER_VALUES)).max(CAREER_VALUES.length),
   who_should_take: draftText,
   who_should_skip: draftText,
   outline_match: z.enum(["yes", "partly", "no"]).nullable(),

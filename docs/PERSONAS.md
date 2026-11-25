@@ -6,12 +6,17 @@ They are fictional, built from the research personas in [PRD.md](PRD.md) section
 
 ## Signing in
 
+**Handing the prototype to someone new?** They need nothing from this page. The sign-in screen opens with a panel, **"Testing the prototype? Start here"**, showing these four people as cards. One tap signs in, and that person's **demo script** (numbered steps with links) opens in a side panel. After that it stays closed until they tap **Demo script**, a button at the bottom right of every app page. The "Prototype" strip at the top always says who you are (for example "Prototype · Ananya") and has **Switch persona** and **Reset**.
+
+The longer way, to test sign-in itself:
+
 1. Run `pnpm dev` and open http://localhost:3000. With no Supabase keys the app runs as the prototype.
 2. Seekers and Ishita sign in on the sign-in page. Karan is an alum without an ISB email, so he signs in from **Sign in as a contributor** (`/contribute`).
 3. Enter the email below. The address checks still run, but no email is sent: type **any 6 digits** as the code.
-4. Shortcut: **Sample accounts** in the strip at the top lets you continue as anyone in one tap.
+4. **Switch persona** in the strip at the top opens Sample accounts: continue as anyone in one tap.
+5. Try both themes (sun/moon button, top right) and both layouts: narrower than 1024px is the phone layout with a bottom tab bar, wider is desktop.
 
-Everything you do (reviews, questions, answers) stays in the server's memory and is shared by every persona, so one person's action shows up for the others. **Reset demo data** in the top strip, or restarting `pnpm dev`, puts it all back.
+Everything you do (reviews, questions, answers) stays in the server's memory and is shared by every persona, so one person's action shows up for the others. **Reset** in the top strip, or restarting `pnpm dev`, puts it all back.
 
 | Persona         | Side               | Email                        | Signs in on   |
 | --------------- | ------------------ | ---------------------------- | ------------- |
@@ -40,7 +45,7 @@ Everything you do (reviews, questions, answers) stays in the server's memory and
 2. Open **Pricing Strategy**. Notice the "new or changed" banner (Prof Bhatt teaches it now; every review is for Prof Sen), the summary block with agreement, and the reasons under each rating.
 3. Compare with **Corporate Valuation** (same professor both years, 6+ hours a week).
 4. On a review, **ask the author** something the review does not cover, for example "Is the project doable alongside placement prep?"
-5. On Home, the **post-bid survey** prompt asks whether ISB Hood changed a bid.
+5. On Home, the **post-bid survey** prompt asks whether ISB Hood changed a bid ("Answer now" or "Not now").
 
 **What it tests:** reading reasons rather than ratings, course pages with 3+ reviews (value reached), the ask-the-author loop (F2, F5, F7).
 
@@ -99,8 +104,8 @@ Everything you do (reviews, questions, answers) stays in the server's memory and
 **Try this**
 
 1. Home → **Write a review**, pick **Business Analytics** (Prof Pillai, Term 5).
-2. Go through the **4-step form**. Note the time it takes: the PRD's line is about 5 minutes.
-3. Try to publish a rating with no reason (it is blocked), make the evaluation mix not total 100 (it is blocked), close the tab mid-way and come back (the draft is restored).
+2. Go through the **4-step form**. The professor and term are already selected (the course has only one). Note the time it takes: the PRD's line is about 5 minutes.
+3. Try to publish a rating with no reason (it is blocked), make the evaluation mix not total 100 (it is blocked), close the tab mid-way and come back (the draft saves as you type, so it is restored). Deleting a draft asks first, in the page.
 4. Choose to show her name or appear as "Verified Co'27 student", then **publish**. As an ISB account she goes live at once.
 5. Sign in as Ananya and open Business Analytics: Ishita's review is there.
 
@@ -139,4 +144,4 @@ Any other address also works. A new `@isb.edu` address makes a reader who starts
 
 ## Rules for adding personas
 
-From PRD 13.2: every persona is fictional (no real interviewees or classmates, no verbatim interview quotes as review text), and the existing demo people stay consistent. Add a person in `lib/demo/seed-data.ts` with a `persona` entry; set `side: "seeker"` or `side: "contributor"` to list them first on Sample accounts.
+From PRD 13.2: every persona is fictional (no real interviewees or classmates, no verbatim interview quotes as review text), and the existing demo people stay consistent. Add a person in `lib/demo/seed-data.ts` with a `persona` entry; set `side: "seeker"` or `side: "contributor"` to show them on the sign-in panel and first on Sample accounts, `role` for the short label on their card, and `script` for the steps on their Home. Course links in scripts use the course code (`/courses/MKT-501`).

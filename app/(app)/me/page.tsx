@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { MyReviewsList } from "@/components/my-reviews";
 import { SurveyPrompt } from "@/components/survey-prompt";
 import { card, notice, pageColumn } from "@/components/styles";
@@ -9,6 +10,7 @@ import { listComments } from "@/lib/db/comments";
 import { listMyReviews } from "@/lib/db/reviews";
 import { buildThreads, waitingForMe } from "@/lib/domain/threads";
 import { DeleteAccountForm, NotifyPrefForm } from "./settings-forms";
+import { PhoneLegalLinks } from "@/components/legal-links";
 
 export const metadata: Metadata = { title: "My activity · ISB Hood" };
 
@@ -17,10 +19,11 @@ export default function MyActivityPage({ searchParams }: PageProps<"/me">) {
     <main className={pageColumn}>
       <h1 className="type-title">My activity</h1>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading…" />}>
           <Activity searchParams={searchParams} />
         </Suspense>
       </div>
+      <PhoneLegalLinks />
     </main>
   );
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { snoozeSurvey } from "@/app/(app)/survey/actions";
 import { getMySurveyStatus, isSnoozed } from "@/lib/db/surveys";
 import type { Survey } from "@/lib/domain/surveys";
-import { primaryButtonInline } from "./styles";
+import { secondaryButtonInline } from "./styles";
 
 const COPY: Record<Survey, { title: string; body: string; href: string }> = {
   post_bid: {
@@ -37,7 +37,8 @@ export async function SurveyPrompt() {
           <p className="font-semibold text-foreground">{COPY[survey].title}</p>
           <p className="mt-1 text-sm text-foreground">{COPY[survey].body}</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <Link href={COPY[survey].href} className={primaryButtonInline}>
+            {/* Outline, not filled: the page's own main action keeps the one filled button. */}
+            <Link href={COPY[survey].href} className={secondaryButtonInline}>
               Answer now
             </Link>
             <form action={snoozeSurvey.bind(null, survey)}>

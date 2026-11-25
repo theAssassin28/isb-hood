@@ -1117,6 +1117,14 @@ export function surveyInsertCheck(
 }
 
 /** The demo's people, for the "choose who to be" screen. */
+/** The persona entry for a signed-in demo person, if they have one. */
+export function personaOf(uid: string | null) {
+  const person = uid ? PEOPLE.find((p) => p.id === uid) : undefined;
+  return person?.persona
+    ? { name: person.full_name, email: person.email, ...person.persona }
+    : null;
+}
+
 export function personas() {
   return PEOPLE.filter((p) => p.persona).map((p) => ({
     id: p.id,

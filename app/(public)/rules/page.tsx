@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Content rules · ISB Hood" };
 // [confirm] wording with AAC/ASA before launch.
 export default function RulesPage() {
   return (
-    <article className="space-y-6 text-foreground">
+    <article className="mx-auto w-full max-w-xl space-y-6 text-foreground">
       <h1 className="type-title">Content rules</h1>
       <p className="text-foreground/80">
         ISB Hood exists so the next batch can make better decisions. These rules keep it useful and

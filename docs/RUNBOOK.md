@@ -25,7 +25,10 @@ With no Supabase keys in `.env.local`, the app runs as a clickable prototype on 
 1. `pnpm dev`, then open http://localhost:3000.
 2. Sign in with any email and any 6-digit code; the checks on the address still run, but no email is sent. A sample person's email (listed under **Sample accounts**) signs in as them; any other address makes a new account that starts at "About you" (an ISB address as a reader, any other as an alum waiting for verification).
 3. Ready-made personas for both sides (information seekers and contributors), with walkthroughs: [PERSONAS.md](PERSONAS.md).
-4. The strip at the top of every page has **Sample accounts** (continue as anyone in one tap) and **Reset demo data**.
+4. The sign-in page opens with **"Testing the prototype? Start here"**: the four primary personas, one tap each; their demo script opens in a side panel, and the "Demo script" button at the bottom right brings it back any time. The "Prototype" strip at the top of every page says who you are and has **Switch persona** and **Reset**.
+5. The sun/moon button at the top right switches between light and dark; to show both layouts, make the window narrower than 1024px (phone, bottom tab bar) or wider (desktop).
+
+Other sample people (the four primary personas are in [PERSONAS.md](PERSONAS.md)):
 
 | Person             | Shows                                                           |
 | ------------------ | --------------------------------------------------------------- |
@@ -38,6 +41,8 @@ With no Supabase keys in `.env.local`, the app runs as a clickable prototype on 
 | Rohan, new student | Onboarding                                                      |
 
 The data lives in `lib/demo/seed-data.ts`; edit it and press Reset. Changes made while clicking are kept in memory by the server process only, so they vanish on restart. Present from `pnpm dev` (or `pnpm build && pnpm start`) on a laptop; a serverless host would lose them between requests. Email, PostHog and the daily job do nothing in the demo.
+
+Before launch, check the live site: `/sample-accounts` must return "not found" and the sign-in page must not show the "Prototype" note. Both mean demo mode is off.
 
 ## One-time setup of the hosted services (all free plans)
 

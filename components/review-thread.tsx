@@ -36,14 +36,14 @@ export function ReviewThread({
   const containsOpen = threads.some((t) => t.question.id === openThreadId);
   const count = threads.length;
 
-  const summary =
-    count === 0
-      ? isMyEntry
-        ? "Questions from readers"
-        : openToQuestions
-          ? "Ask the author"
-          : "Questions"
-      : `Questions (${count})` + (isMyEntry && waiting > 0 ? ` · ${waiting} waiting for you` : "");
+  // One name per role, whatever the count, so the control is recognisable on
+  // every review: readers "Ask the author", the author "Questions from readers".
+  const counted = count === 0 ? "" : ` · ${count} question${count === 1 ? "" : "s"}`;
+  const summary = isMyEntry
+    ? `Questions from readers${counted}` + (waiting > 0 ? ` · ${waiting} waiting for you` : "")
+    : openToQuestions
+      ? `Ask the author${counted}`
+      : `Questions${counted}`;
 
   return (
     <details
