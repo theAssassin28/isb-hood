@@ -4,8 +4,9 @@ Passes what one ISB batch learns about courses and careers to the next. SWPM Gro
 
 The MVP is an experiment with one loop (write a structured entry, read it, ask the author), run as two tests: course reviews before Term 7 bidding (4 to 10 Jan 2027), then career entries a week later.
 
+- **Handoff (read first):** [docs/HANDOFF.md](docs/HANDOFF.md)
 - **Product requirements (what and why):** [docs/PRD.md](docs/PRD.md)
-- **Build plan (how; start here for code):** [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md)
+- **Build plan (how):** [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md)
 - **Spec:** [docs/source/ISB_Hood_MVP_Requirements.docx](docs/source/ISB_Hood_MVP_Requirements.docx) (plain text in `docs/source/extracted/`)
 - **Deck and product note:** `docs/source/`
 
