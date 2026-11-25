@@ -17,7 +17,7 @@ function systemTheme(): "light" | "dark" {
 }
 
 /** Page colours of the two themes, for the phone's address bar. */
-const BAR = { light: "#f5f5f5", dark: "#0c0c0c" } as const;
+const BAR = { light: "#f4f6f9", dark: "#0e1116" } as const;
 
 /**
  * The layout sets two theme-color tags, one per system setting. With a manual

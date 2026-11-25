@@ -10,6 +10,10 @@ Not reviewed: real email delivery and reply links, the daily email job, PostHog,
 
 How it was measured: each screen was loaded at 375 px and 1440 px as the right sample person, and a script measured every visible control (size, accent fills per screen, labels, headings, sideways scroll). Contrast was computed from the theme tokens for every text, control and chart pair. Flows were walked by hand in the browser.
 
+## Palette change (26 Nov 2026)
+
+Both themes moved to the "cool slate" palette, picked from four options laid out on a Claude Design canvas. Re-checked from `app/globals.css`: 28 colour pairs per theme, none failing. Dark: text 15.4:1 on cards (was 18.4:1, which read harsh over long reviews), muted 7.9:1, accent 8.9:1; tightest pair a chart colour at 4.4:1 (needs 3:1). Light: text 18.1:1, muted 6.4:1, accent 5.7:1; tightest pair the green status on the page at 5.0:1 (needs 4.5:1). The contrast table further down shows the values before this change.
+
 ## Course page and "All reviews" (26 Nov 2026)
 
 Scope: the course page (S9) only, after its desktop layout changed (reviews heading on top; review cards and summary card side by side) and review section titles were made bold capitals. States reviewed: 3+ reviews with a changed professor (`/courses/MKT-501`), 4 reviews with your own entry and open questions (`/courses/STR-503`), 2 reviews ("Based on 2 reviews", `/courses/FIN-507`) and no reviews (`/courses/NEG-504`). Phone 375 px and desktop 1440 px, dark and light.

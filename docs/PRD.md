@@ -253,8 +253,8 @@ Full field specs, aggregation rules and data model: `docs/BUILD_PLAN.md` section
 
 Stella's colours with Kero's shapes and serif titles, in two themes: dark (the reference) and light. The app follows the phone or computer's setting. A sun/moon button at the top right of every screen switches theme and is remembered in that browser; choosing the theme the system already uses goes back to following the system. The phone's address bar takes the same colour.
 
-- Dark: page `#0c0c0c`, surfaces `#141414`, hairlines `#262626`, white text, muted `#bababa`, one sky-blue accent `#87cefa` **only for things you can tap**. Selected chips: white on dark.
-- Light: page `#f5f5f5`, surfaces `#ffffff`, hairlines `#e2e2e2`, near-black text, muted `#595959`, accent `#0a6aa6` (sky blue is too faint on white). Selected chips: dark on light. Every text pair 4.5:1 or better in both themes.
+- Dark ("cool slate", chosen 26 Nov from a Claude Design exploration of four palettes): page `#0e1116`, surfaces `#161b22`, hairlines `#2a313c`, off-white text `#eef2f7` (15.4:1, softer than pure white), muted `#a6b0bf`, one sky-blue accent `#7cc0ff` **only for things you can tap**. Selected chips: ink on the page colour.
+- Light: page `#f4f6f9`, surfaces `#ffffff`, hairlines `#dfe4eb`, text `#111620`, muted `#55606f`, accent `#1d63c8` (sky blue is too faint on white). Every text pair 4.5:1 or better and every border and chart colour 3:1 or better, in both themes.
 - Body: Geist. Titles: Hedvig Letters Serif, weight 400.
 - Corners: 20px cards, 12px fields, alerts and inner panels, pill buttons and chips.
 - Four type sizes per screen: 32 / 20 / 16 / 14. Minimum 16px body text, 44px tap targets.
