@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <>
       <nav aria-label="Admin" className="border-b border-border bg-muted">
-        <ul className="mx-auto flex w-full max-w-xl gap-1 overflow-x-auto px-2">
+        <ul className="mx-auto flex w-full max-w-6xl gap-1 overflow-x-auto px-2 lg:px-6">
           {TABS.map((tab) => (
             <li key={tab.href}>
               <Link

@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Privacy · ISB Hood" };
 // docs/BUILD_PLAN.md 5.3 and 5.4.
 export default function PrivacyPage() {
   return (
-    <article className="space-y-6 text-foreground">
+    <article className="mx-auto w-full max-w-xl space-y-6 text-foreground">
       <h1 className="type-title">What we store</h1>
 
       <section>

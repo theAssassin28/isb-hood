@@ -44,7 +44,7 @@ export function CourseFilters({
       <label htmlFor="filter-q" className="sr-only">
         Search courses
       </label>
-      <div className="flex gap-2">
+      <div className="flex max-w-2xl gap-2">
         <input
           id="filter-q"
           name="q"
@@ -62,7 +62,7 @@ export function CourseFilters({
         <summary className="flex min-h-11 cursor-pointer items-center px-4 font-medium text-brand">
           Filters and sort{activeCount > 0 ? ` (${activeCount} on)` : ""}
         </summary>
-        <div className="grid grid-cols-2 gap-3 px-4 pb-4">
+        <div className="grid grid-cols-2 gap-3 px-4 pb-4 lg:grid-cols-5 lg:items-end">
           {select("term", "Term offered", filters.term ?? "all", [
             { value: "all", label: "All terms" },
             ...terms.map((t) => ({ value: t, label: t })),
@@ -82,14 +82,14 @@ export function CourseFilters({
             { value: "", label: "Any track" },
             ...TRACKS.map((t) => ({ value: t.value, label: t.label })),
           ])}
-          <div className="col-span-2">
+          <div className="col-span-2 lg:col-span-1">
             {select("sort", "Sort by", filters.sort, [
               { value: "reviews", label: "Most reviewed" },
               { value: "learning", label: "Highest learning value" },
             ])}
           </div>
-          <div className="col-span-2 flex items-center gap-3">
-            <button type="submit" className={`${primaryButton} flex-1`}>
+          <div className="col-span-2 flex items-center gap-3 lg:col-span-5 lg:justify-end">
+            <button type="submit" className={`${primaryButton} flex-1 lg:w-auto lg:flex-none`}>
               Show courses
             </button>
             <Link

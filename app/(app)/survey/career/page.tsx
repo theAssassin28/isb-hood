@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { notice, pageColumn } from "@/components/styles";
 import { TrackOnMount } from "@/components/track-on-mount";
 import { requireReader } from "@/lib/auth/session";
@@ -15,7 +16,7 @@ export default function CareerSurveyPage() {
       <h1 className="type-title">Did a career entry help?</h1>
       <p className="mt-2 text-foreground/80">One question. “Nothing yet” is a useful answer too.</p>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading…" />}>
           <Survey />
         </Suspense>
       </div>

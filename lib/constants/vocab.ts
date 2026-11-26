@@ -29,6 +29,52 @@ export const TRACKS = options([
   { value: "other", label: "Other" },
 ]);
 
+/**
+ * Specific career paths under each track, for "Careers it helps" on a review
+ * (added 26 Nov). A review stores path values; older reviews may store a bare
+ * track value ("finance"), which still reads as the track. The onboarding
+ * target track and the course filter stay at the track level.
+ * [confirm] with the team: the list is a first cut from the research themes.
+ */
+export const CAREER_PATHS = [
+  { value: "strategy_consulting", label: "Strategy consulting", track: "consulting" },
+  { value: "tech_consulting", label: "Tech and digital consulting", track: "consulting" },
+  { value: "ops_consulting", label: "Operations consulting", track: "consulting" },
+  { value: "product_management", label: "Product management", track: "product" },
+  { value: "growth_analytics", label: "Growth and product analytics", track: "product" },
+  { value: "investment_banking", label: "Investment banking", track: "finance" },
+  { value: "corporate_finance", label: "Corporate finance and M&A", track: "finance" },
+  { value: "fpa", label: "FP&A", track: "finance" },
+  { value: "pe_vc", label: "Private equity and VC", track: "finance" },
+  { value: "markets_am", label: "Markets and asset management", track: "finance" },
+  { value: "risk", label: "Risk", track: "finance" },
+  { value: "gm_programme", label: "General management programmes", track: "general_management" },
+  { value: "strategy_bizops", label: "Strategy and BizOps", track: "general_management" },
+  { value: "entrepreneurship", label: "Entrepreneurship", track: "general_management" },
+  { value: "brand_management", label: "Brand management", track: "marketing" },
+  { value: "digital_marketing", label: "Digital and performance marketing", track: "marketing" },
+  { value: "sales_category", label: "Sales and category management", track: "marketing" },
+  { value: "other_path", label: "Other", track: "other" },
+] as const;
+
+export type CareerPath = (typeof CAREER_PATHS)[number]["value"];
+
+/** Label for a stored career value: a path, or an older bare track value. */
+export function careerLabel(value: string): string {
+  return (
+    CAREER_PATHS.find((p) => p.value === value)?.label ??
+    TRACKS.find((t) => t.value === value)?.label ??
+    value
+  );
+}
+
+/** The track a stored career value belongs to (a bare track is its own track). */
+export function trackOfCareer(value: string): string | null {
+  const path = CAREER_PATHS.find((p) => p.value === value);
+  if (path) return path.track;
+  return TRACKS.some((t) => t.value === value) ? value : null;
+}
+
 export const FUNCTIONS = options([
   { value: "consulting", label: "Consulting" },
   { value: "engineering", label: "Engineering / technology" },

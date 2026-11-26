@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Sign-in did not finish · ISB Hood" 
 
 export default function SignInProblemPage() {
   return (
-    <>
+    <div className="mx-auto w-full max-w-xl">
       <h1 className="type-title">Sign-in did not finish</h1>
       <p className="mt-2 text-foreground/80">
         Nothing was saved. This usually means the code had expired or the session expired. Try once
@@ -17,6 +17,6 @@ export default function SignInProblemPage() {
           Back to sign in
         </Link>
       </div>
-    </>
+    </div>
   );
 }

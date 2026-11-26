@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { ActionButton } from "@/components/action-button";
 import { card, dangerButton, notice, pageColumn, secondaryButton } from "@/components/styles";
 import { requireModerator } from "@/lib/auth/session";
@@ -61,7 +62,7 @@ export default function ModerationPage() {
         .
       </p>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-muted-foreground">Loading the queue…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading the queue…" />}>
           <Queue />
         </Suspense>
       </div>

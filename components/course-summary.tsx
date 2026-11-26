@@ -1,4 +1,5 @@
 import type { CourseSummary } from "@/lib/domain/aggregation";
+import { CareerPills } from "./career-pills";
 import { EvalMixBar } from "./eval-mix-bar";
 
 // Summary block of the course page (docs/BUILD_PLAN.md 4.4, rules 6.1).
@@ -33,7 +34,7 @@ export function CourseSummaryBlock({ summary }: { summary: CourseSummary }) {
         </p>
       ) : null}
 
-      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4">
+      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 lg:grid-cols-4">
         <Stat
           label="Weekly workload"
           value={summary.workload?.label ?? "—"}
@@ -78,8 +79,16 @@ export function CourseSummaryBlock({ summary }: { summary: CourseSummary }) {
         </div>
       ) : null}
 
-      <Lines title="Who should take it" lines={summary.take} total={summary.takeTotal} />
-      <Lines title="Who should skip it" lines={summary.skip} total={summary.skipTotal} />
+      {/* Career paths only: the written "who should take or skip it" lines are in
+          each review below, so the summary does not repeat them. */}
+      {summary.careers.length > 0 ? (
+        <div className="mt-5">
+          <h3 className="type-label">Who should take it</h3>
+          <div className="mt-2">
+            <CareerPills tracks={summary.careers} label="Career paths reviewers named" />
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -102,39 +111,6 @@ function Stat({
         {value}
       </dd>
       {note ? <dd className="text-sm text-muted-foreground">{note}</dd> : null}
-    </div>
-  );
-}
-
-function Lines({
-  title,
-  lines,
-  total,
-}: {
-  title: string;
-  lines: CourseSummary["take"];
-  total: number;
-}) {
-  if (lines.length === 0) return null;
-  return (
-    <div className="mt-5">
-      <h3 className="type-label">{title}</h3>
-      <ul className="mt-2 space-y-2">
-        {lines.map((line) => (
-          <li key={line.reviewId} className="text-sm">
-            <p className="break-words text-foreground">“{line.text}”</p>
-            <p className="text-sm text-muted-foreground">{line.offering}</p>
-          </li>
-        ))}
-      </ul>
-      {total > lines.length ? (
-        <a
-          href="#reviews"
-          className="mt-1 inline-flex min-h-11 items-center text-sm text-brand underline underline-offset-4"
-        >
-          See all {total} in the reviews below
-        </a>
-      ) : null}
     </div>
   );
 }

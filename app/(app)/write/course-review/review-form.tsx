@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChoiceChips, MultiChips, Question, TextArea, Toggle } from "@/components/form-fields";
 import { ReviewBody } from "@/components/review-body";
 import {
+  dangerButton,
   card,
   fieldInput,
   fieldLabel,
@@ -14,6 +15,7 @@ import {
   secondaryButton,
 } from "@/components/styles";
 import {
+  CAREER_PATHS,
   COHORTS,
   EVALUATION_COMPONENTS,
   TEACHING_STYLES,
@@ -101,8 +103,13 @@ export function ReviewForm({
   const isPublished = initial.status !== null && initial.status !== "draft";
 
   const [offerings, setOfferings] = useState(initialOfferings);
+  // With one confirmed professor and term there is nothing to choose: pre-select it.
+  const onlyOffering =
+    initialOfferings.length === 1 && initialOfferings[0].status !== "pending"
+      ? initialOfferings[0].id
+      : "";
   const [offeringChoice, setOfferingChoice] = useState<string>(
-    initial.offeringId ?? (initialOfferings.length === 0 ? NEW : ""),
+    initial.offeringId ?? (initialOfferings.length === 0 ? NEW : onlyOffering),
   );
   const [newOffering, setNewOffering] = useState({
     professor: "",
@@ -118,6 +125,13 @@ export function ReviewForm({
   const [banner, setBanner] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Extract<SaveResult, { ok: true }> | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  // Saves run one at a time, so a background save and "Continue" never both
+  // create the same review. The ref holds the newest id for whichever runs next.
+  const reviewIdRef = useRef(initial.reviewId);
+  const inFlight = useRef<Promise<unknown>>(Promise.resolve());
+  const lastSaved = useRef(JSON.stringify([initial.fields, initial.offeringId]));
 
   // Active time in the form, carried across sessions (form_seconds).
   const seconds = useRef(initial.formSeconds);
@@ -136,6 +150,8 @@ export function ReviewForm({
       firstRender.current = false;
       return;
     }
+    // On phones the page scrolls inside <body> (app/globals.css); on desktop, the window.
+    document.body.scrollTo({ top: 0 });
     window.scrollTo({ top: 0 });
     heading.current?.focus();
   }, [view]);
@@ -171,7 +187,7 @@ export function ReviewForm({
         : `Verified ${author.cohort} student`;
 
   const buildInput = (step: number): SaveInput => ({
-    reviewId,
+    reviewId: reviewIdRef.current,
     courseId: course.id,
     offering: offeringChoice === NEW ? newOffering : { id: offeringChoice },
     fields,
@@ -179,6 +195,32 @@ export function ReviewForm({
     formSeconds: seconds.current,
     onBehalf: isModerator && onBehalf.name.trim() !== "" ? onBehalf : null,
   });
+
+  // Save the draft in the background 2.5 seconds after the last change, so a
+  // closed tab loses nothing. Only for unpublished reviews of a listed offering
+  // (a new professor is saved with "Continue", once it is checked).
+  const snapshot = JSON.stringify([fields, offeringChoice]);
+  useEffect(() => {
+    if (isPublished || typeof view !== "number") return;
+    if (offeringChoice === "" || offeringChoice === NEW) return;
+    if (snapshot === lastSaved.current) return;
+    const input = { ...buildInput(view), autosave: true };
+    const timer = setTimeout(() => {
+      inFlight.current = inFlight.current.then(async () => {
+        const saved = await saveDraft({ ...input, reviewId: reviewIdRef.current }).catch(
+          () => null,
+        );
+        if (saved?.ok) {
+          reviewIdRef.current = saved.reviewId;
+          setReviewId(saved.reviewId);
+          lastSaved.current = snapshot;
+        }
+      });
+    }, 2500);
+    return () => clearTimeout(timer);
+    // buildInput is rebuilt every render; `snapshot` is what decides a save.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapshot, view, isPublished]);
 
   const checkOffering = (): boolean => {
     const problems: Record<string, string> = {};
@@ -215,6 +257,7 @@ export function ReviewForm({
       return false;
     }
     setBanner(null);
+    reviewIdRef.current = saved.reviewId;
     setReviewId(saved.reviewId);
     if (offeringChoice === NEW) {
       setOfferings((list) =>
@@ -249,18 +292,21 @@ export function ReviewForm({
 
     if (!isPublished) {
       setBusy(true);
+      await inFlight.current;
       const saved = await saveDraft(buildInput(step)).catch((): SaveResult => ({
         ok: false,
         error: "We could not save that. Check your connection and try again.",
       }));
       setBusy(false);
       if (!absorb(saved)) return;
+      lastSaved.current = snapshot;
     }
     setView(step === STEPS.length - 1 ? "preview" : step + 1);
   };
 
   const publish = async () => {
     setBusy(true);
+    await inFlight.current;
     const saved = await publishReview(buildInput(STEPS.length - 1)).catch((): SaveResult => ({
       ok: false,
       error: "We could not publish that. Check your connection and try again.",
@@ -284,8 +330,8 @@ export function ReviewForm({
 
   const remove = async () => {
     if (!reviewId) return;
-    if (!window.confirm("Delete this review? This cannot be undone.")) return;
     setBusy(true);
+    await inFlight.current;
     const outcome = await deleteReview(reviewId).catch(() => ({
       ok: false as const,
       error: "We could not delete that. Try again.",
@@ -746,15 +792,35 @@ export function ReviewForm({
             <Question
               id="careers_helped"
               legend="Careers it helps"
-              hint="Optional."
+              hint="Optional. Pick the specific paths, e.g. investment banking rather than finance."
               error={errors.careers_helped}
             >
-              <MultiChips
-                name="careers_helped"
-                options={TRACKS}
-                value={fields.careers_helped}
-                onChange={(v) => set("careers_helped", v)}
-              />
+              {/* One chip group per track; together they make one answer. */}
+              <div className="space-y-3">
+                {TRACKS.map((track) => {
+                  const paths = CAREER_PATHS.filter((p) => p.track === track.value);
+                  if (paths.length === 0) return null;
+                  const inGroup = new Set<string>(paths.map((p) => p.value));
+                  return (
+                    <div key={track.value}>
+                      <p className="type-label">{track.label}</p>
+                      <div className="mt-1.5">
+                        <MultiChips
+                          name="careers_helped"
+                          options={paths}
+                          value={fields.careers_helped.filter((v) => inGroup.has(v))}
+                          onChange={(picked) =>
+                            set("careers_helped", [
+                              ...fields.careers_helped.filter((v) => !inGroup.has(v)),
+                              ...picked,
+                            ])
+                          }
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </Question>
 
             <Question
@@ -856,20 +922,46 @@ export function ReviewForm({
       <p className="mt-3 text-center text-sm text-muted-foreground">
         {isPublished
           ? "Changes are saved when you press Save changes on the preview."
-          : "Your answers are saved each time you continue."}
+          : "Your answers save as you go."}
       </p>
 
       {reviewId ? (
-        <p className="mt-8 text-center">
-          <button
-            type="button"
-            onClick={remove}
-            disabled={busy}
-            className="min-h-11 px-2 text-sm text-destructive underline underline-offset-4"
-          >
-            {isPublished ? "Delete this review" : "Delete this draft"}
-          </button>
-        </p>
+        confirmingDelete ? (
+          <div role="alert" className="mt-8 rounded-md border border-critical bg-card p-4">
+            <p className="font-medium text-foreground">
+              {isPublished ? "Delete this review?" : "Delete this draft?"}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {isPublished
+                ? "It disappears for every reader, with its questions and answers. This cannot be undone."
+                : "Your answers so far are removed. This cannot be undone."}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <button type="button" onClick={remove} disabled={busy} className={dangerButton}>
+                {busy ? "Deleting…" : "Delete"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(false)}
+                disabled={busy}
+                className={secondaryButton}
+              >
+                Keep it
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-8 text-center">
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              disabled={busy}
+              className="min-h-11 px-2 text-sm text-destructive underline underline-offset-4"
+            >
+              {isPublished ? "Delete this review" : "Delete this draft"}
+            </button>
+          </p>
+        )
       ) : null}
     </form>
   );

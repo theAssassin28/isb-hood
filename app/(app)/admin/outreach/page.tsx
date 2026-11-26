@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { CsvImportForm } from "@/components/csv-import-form";
 import { card, notice, pageColumn } from "@/components/styles";
 import { requireModerator } from "@/lib/auth/session";
@@ -45,7 +46,7 @@ export default function AdminOutreachPage() {
       </section>
 
       <div className="mt-8">
-        <Suspense fallback={<p className="text-muted-foreground">Loading the list…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading the list…" />}>
           <Contacts />
         </Suspense>
       </div>

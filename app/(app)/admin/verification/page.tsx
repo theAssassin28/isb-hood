@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { card, notice, pageColumn } from "@/components/styles";
 import { requireModerator } from "@/lib/auth/session";
 import { suggestMatches, type OutreachContact } from "@/lib/domain/outreachMatch";
@@ -27,7 +28,7 @@ export default function VerificationPage() {
         everything they have written and lets them read.
       </p>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-muted-foreground">Loading the queue…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading the queue…" />}>
           <Queue />
         </Suspense>
       </div>

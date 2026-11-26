@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Banner, CourseSummary } from "@/lib/domain/aggregation";
 import { offeringLabel } from "@/lib/domain/offering";
+import { courseHref } from "@/lib/routes";
 import type { PublicReview } from "@/lib/domain/publicReview";
 import { CourseSummaryBlock } from "./course-summary";
 import { ReviewBody } from "./review-body";
@@ -41,6 +42,7 @@ export function CoursePageView(props: CoursePageViewProps) {
   const writeHref = props.myReviewId
     ? `/write/course-review?review=${props.myReviewId}`
     : `/write/course-review?course=${course.id}`;
+  const writeLabel = props.myReviewId ? "Edit your review" : "Took this course? Add your review";
   const showSwitch =
     current !== null &&
     props.currentProfessorCount >= MIN_REVIEWS_FOR_PROFESSOR_SWITCH &&
@@ -55,77 +57,96 @@ export function CoursePageView(props: CoursePageViewProps) {
         All courses
       </Link>
 
-      <header className="mt-1">
-        <h1 className="type-title">{course.title}</h1>
-        <p className="mt-1 text-muted-foreground">
-          {course.code}
-          {current ? ` · ${current.professor}, ${current.term_label} ${current.cohort_year}` : ""}
-        </p>
-        {course.hiddenFromReaders ? (
-          <p className="mt-2 text-sm font-medium text-destructive">
-            Hidden from readers. Only moderators can see this page.
+      {/* One column at every width, in the same order as on phones: header,
+          summary ("What reviewers say"), then all reviews, then the write bar.
+          From 1024px the cards use the full page width, like the rest of the
+          app; long written answers keep a readable line length inside them. */}
+      <div>
+        <header className="mt-1 max-w-3xl">
+          <h1 className="type-title">{course.title}</h1>
+          <p className="mt-1 text-muted-foreground">
+            {course.code}
+            {current ? ` · ${current.professor}, ${current.term_label} ${current.cohort_year}` : ""}
           </p>
-        ) : null}
-      </header>
-
-      {banner ? <NewOrChangedBanner banner={banner} writeHref={writeHref} /> : null}
-
-      {props.totalCount > 0 ? (
-        <>
-          {showSwitch ? (
-            <nav aria-label="Which reviews" className="mt-5 flex gap-2">
-              <ScopeLink href={`/courses/${course.id}`} active={scope === "all"}>
-                All reviews ({props.totalCount})
-              </ScopeLink>
-              <ScopeLink href={`/courses/${course.id}?prof=current`} active={scope === "current"}>
-                {current.professor} only ({props.currentProfessorCount})
-              </ScopeLink>
-            </nav>
+          {course.hiddenFromReaders ? (
+            <p className="mt-2 text-sm font-medium text-destructive">
+              Hidden from readers. Only moderators can see this page.
+            </p>
           ) : null}
+          {/* The summary comes first and is tall, so offer a way straight to the reasons. */}
+          {props.totalCount > 0 ? (
+            <a
+              href="#reviews"
+              className="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-brand underline underline-offset-4"
+            >
+              Read the {props.totalCount} review{props.totalCount === 1 ? "" : "s"} ↓
+            </a>
+          ) : null}
+        </header>
 
-          <div className="mt-5">
-            <CourseSummaryBlock summary={summary} />
-          </div>
+        {banner ? <NewOrChangedBanner banner={banner} writeHref={writeHref} /> : null}
 
-          <section id="reviews" aria-labelledby="reviews-heading" className="mt-8 scroll-mt-4">
-            <h2 id="reviews-heading" className="type-heading">
-              {scope === "current" && current
-                ? `Reviews of ${current.professor}’s offerings`
-                : "All reviews"}
-            </h2>
-            <ul className="mt-3 space-y-4">
-              {reviews.map((review) => (
-                <li key={review.id} id={`review-${review.id}`} className={`${card} scroll-mt-4`}>
-                  <p className="mb-3 flex flex-wrap gap-x-2 text-sm text-muted-foreground">
-                    <span>{formatMonth(review.published_at)}</span>
-                    {review.is_edited ? <span>· edited</span> : null}
-                    {review.is_mine ? (
-                      <span className="font-medium text-brand">· Your review</span>
-                    ) : null}
-                  </p>
-                  <ReviewBody
-                    fields={review}
-                    offeringLabel={offeringLabel(review)}
-                    authorDisplay={review.author_display}
-                  />
-                  {review.entered_by_team ? (
-                    <p className="mt-3 text-sm text-muted-foreground">
-                      Entered by the ISB Hood team from a conversation with the author, with their
-                      consent.
+        {props.totalCount > 0 ? (
+          <>
+            <div className="mt-5">
+              <CourseSummaryBlock summary={summary} />
+            </div>
+
+            <section id="reviews" aria-labelledby="reviews-heading" className="mt-8 scroll-mt-24">
+              {showSwitch ? (
+                <nav aria-label="Which reviews" className="mb-5 flex flex-wrap gap-2">
+                  <ScopeLink href={courseHref(course.code)} active={scope === "all"}>
+                    All reviews ({props.totalCount})
+                  </ScopeLink>
+                  <ScopeLink
+                    href={`${courseHref(course.code)}?prof=current`}
+                    active={scope === "current"}
+                  >
+                    {current.professor} only ({props.currentProfessorCount})
+                  </ScopeLink>
+                </nav>
+              ) : null}
+              <h2 id="reviews-heading" className="type-heading">
+                {scope === "current" && current
+                  ? `Reviews of ${current.professor}’s offerings`
+                  : "All reviews"}
+              </h2>
+              <ul className="mt-3 space-y-4">
+                {reviews.map((review) => (
+                  <li key={review.id} id={`review-${review.id}`} className={`${card} scroll-mt-24`}>
+                    <p className="mb-3 flex flex-wrap gap-x-2 text-sm text-muted-foreground">
+                      <span>{formatMonth(review.published_at)}</span>
+                      {review.is_edited ? <span>· edited</span> : null}
+                      {review.is_mine ? (
+                        <span className="font-medium text-brand">· Your review</span>
+                      ) : null}
                     </p>
-                  ) : null}
-                  {props.afterReview?.(review)}
-                </li>
-              ))}
-            </ul>
-          </section>
-        </>
-      ) : null}
+                    <ReviewBody
+                      fields={review}
+                      offeringLabel={offeringLabel(review)}
+                      authorDisplay={review.author_display}
+                    />
+                    {review.entered_by_team ? (
+                      <p className="mt-3 text-sm text-muted-foreground">
+                        Entered by the ISB Hood team from a conversation with the author, with their
+                        consent.
+                      </p>
+                    ) : null}
+                    {props.afterReview?.(review)}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </>
+        ) : null}
 
-      <div className="sticky bottom-0 -mx-4 mt-8 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
-        <Link href={writeHref} className={primaryButton}>
-          {props.myReviewId ? "Edit your review" : "Took this course? Add your review"}
-        </Link>
+        {/* Pinned to the bottom of the scroll area: just above the tab bar on phones,
+            the bottom of the window on desktop. */}
+        <div className="sticky bottom-0 -mx-4 mt-8 border-t border-border bg-background/95 px-4 py-3 backdrop-blur lg:mx-0 lg:px-0">
+          <Link href={writeHref} className={primaryButton}>
+            {writeLabel}
+          </Link>
+        </div>
       </div>
     </>
   );

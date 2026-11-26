@@ -31,8 +31,10 @@ pnpm dev
 
 Open http://localhost:3000.
 
-- **Signing in:** pick a person on the sign-in page. No email is sent.
-- **Switching and resetting:** the strip at the top has **Switch person** and **Reset demo data**.
+- **Signing in:** the sign-in page opens with "Testing the prototype? Start here": tap one of the four primary personas (walkthroughs in `docs/PERSONAS.md`). Or type any email and any 6-digit code; no email is sent.
+- **Demo script:** each primary persona has one, in a panel from the "Demo script" button at the bottom right.
+- **Switching and resetting:** the strip at the top says who you are and has **Switch persona** and **Reset**.
+- **Layouts and themes:** narrower than 1024px is the phone layout (bottom tab bar), wider is desktop; the sun/moon button switches light and dark.
 
 | Person             | What to show                                                                           |
 | ------------------ | -------------------------------------------------------------------------------------- |
@@ -66,14 +68,15 @@ Open http://localhost:3000.
 
 In demo mode, `createClient` (`lib/supabase/server.ts`) and `createAdminClient` (`lib/supabase/admin.ts`) return a fake Supabase client instead of the real one, so the pages and actions run unchanged.
 
-| File                                                         | Role                                                                                                |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| `lib/demo/seed-data.ts`                                      | The sample people, courses, reviews, comments, flags and outreach                                   |
-| `lib/demo/db.ts`                                             | The in-memory database. It copies the SQL views, access rules, triggers and functions in TypeScript |
-| `lib/demo/client.ts`                                         | The fake client: the query builder, joins, `rpc` and `auth`                                         |
-| `lib/demo/actions.ts`                                        | Signing in as a person, and Reset                                                                   |
-| `components/demo-banner.tsx`, `components/demo-personas.tsx` | The strip and the person picker                                                                     |
-| `tests/unit/demo.test.ts`                                    | Checks that the fake keeps anonymity, access, triggers and metrics right                            |
+| File                                                           | Role                                                                                                |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `lib/demo/seed-data.ts`                                        | The sample people, courses, reviews, comments, flags and outreach                                   |
+| `lib/demo/db.ts`                                               | The in-memory database. It copies the SQL views, access rules, triggers and functions in TypeScript |
+| `lib/demo/client.ts`                                           | The fake client: the query builder, joins, `rpc` and `auth`                                         |
+| `lib/demo/actions.ts`                                          | Signing in as a person, and Reset                                                                   |
+| `components/demo-banner.tsx`, `components/demo-personas.tsx`   | The strip and the person picker                                                                     |
+| `components/demo-start.tsx`, `components/demo-script-dock.tsx` | The sign-in persona panel and the "Demo script" button and panel                                    |
+| `tests/unit/demo.test.ts`                                      | Checks that the fake keeps anonymity, access, triggers and metrics right                            |
 
 When you change any SQL in `supabase/migrations/`, make the same change in `lib/demo/db.ts`. Otherwise the demo and the real app drift apart.
 
@@ -108,7 +111,7 @@ The full list is in `CLAUDE.md`.
 - **Data we never collect:** grades, salaries, offer amounts or phone numbers.
 - **Out of scope:** places, AI, chat, the people finder and a mobile app are not built. Chat and the people finder exist only as fake doors.
 - **Free plans only:** ask before adding anything paid.
-- **Visual system:** Stella's colours with Kero's shapes, dark only, phone first. Use the tokens in `app/globals.css` and the class strings in `components/styles.ts`. Show previews before any restyle.
+- **Visual system:** Stella's colours with Kero's shapes, dark and light themes, phone first (two layouts, split at 1024px; see PRD 6.3). Use the tokens in `app/globals.css` and the class strings in `components/styles.ts`. Show previews before any restyle.
 - **Next.js 16:** this is newer than most docs assume. Read `node_modules/next/dist/docs/` before writing code (see `AGENTS.md`).
 
 ## Reference

@@ -28,6 +28,11 @@ export type SaveInput = {
   formSeconds: number;
   /** Moderators only: entering a review for a consenting senior. */
   onBehalf: { name: string; cohort: string } | null;
+  /**
+   * A background save while the writer is typing. Saves the draft like the end
+   * of a step, but logs no form_step_completed, so drop-off stays accurate.
+   */
+  autosave?: boolean;
 };
 
 export type SaveResult =
@@ -48,7 +53,7 @@ export type SaveResult =
 
 const GENERIC = "We could not save that. Check your connection and try again.";
 
-/** Autosave at the end of a step. Never publishes. */
+/** Save the draft: at the end of a step, or in the background while typing. Never publishes. */
 export async function saveDraft(input: SaveInput): Promise<SaveResult> {
   return persist(input, "draft");
 }
@@ -195,7 +200,7 @@ async function persist(input: SaveInput, mode: "draft" | "publish"): Promise<Sav
   if (!reviewId) {
     await track(profile.id, "form_started", { entry_type: "course_review", course_id: courseId });
   }
-  if (mode === "draft") {
+  if (mode === "draft" && !input.autosave) {
     await track(profile.id, "form_step_completed", {
       entry_type: "course_review",
       step: Math.max(0, Math.min(Math.round(Number(input.step) || 0), STEPS.length - 1)),

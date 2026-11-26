@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import { CoursePageSkeleton } from "@/components/skeleton";
 import { CoursePageView } from "@/components/course-page-view";
 import { CoursesClosedForYl } from "@/components/courses-closed";
 import { FakeDoor } from "@/components/fake-door";
 import { FlagButton } from "@/components/flag-button";
 import { ReviewThread } from "@/components/review-thread";
-import { notice, pageColumn } from "@/components/styles";
+import { notice, pageWide } from "@/components/styles";
 import { TrackOnMount } from "@/components/track-on-mount";
 import { safeCourseId } from "@/lib/auth/access";
 import { requireReader } from "@/lib/auth/session";
 import { listComments } from "@/lib/db/comments";
 import { loadCoursePage, scopedReviews } from "@/lib/db/coursePage";
+import { findCourseRef } from "@/lib/db/courses";
+import { courseHref } from "@/lib/routes";
 import { getSettings } from "@/lib/db/settings";
 import { coursesOpenTo } from "@/lib/domain/settings";
 import { buildThreads } from "@/lib/domain/threads";
@@ -21,8 +24,8 @@ export const metadata: Metadata = { title: "Course · ISB Hood" };
 
 export default function CoursePage({ params, searchParams }: PageProps<"/courses/[courseId]">) {
   return (
-    <main className={pageColumn}>
-      <Suspense fallback={<p className="text-muted-foreground">Loading the course…</p>}>
+    <main className={pageWide}>
+      <Suspense fallback={<CoursePageSkeleton />}>
         <Course params={params} searchParams={searchParams} />
       </Suspense>
     </main>
@@ -44,8 +47,22 @@ async function Course({
   ]);
   if (!coursesOpenTo(profile, settings)) return <CoursesClosedForYl />;
 
-  const courseId = safeCourseId(rawId);
-  if (!courseId) notFound();
+  // The URL names the course by its code (/courses/MKT-501). Older links use
+  // the id; they redirect to the code URL, keeping ?thread and ?prof.
+  const segment = decodeURIComponent(rawId);
+  const asId = safeCourseId(segment);
+  const ref = await findCourseRef(asId ? { id: asId } : { code: segment });
+  if (!ref) notFound();
+  if (segment !== ref.code) {
+    const keep = new URLSearchParams();
+    for (const key of ["thread", "prof"] as const) {
+      const value = query[key];
+      if (typeof value === "string") keep.set(key, value);
+    }
+    const qs = keep.toString();
+    redirect(`${courseHref(ref.code)}${qs ? `?${qs}` : ""}`);
+  }
+  const courseId = ref.id;
   const isModerator = profile.role === "moderator";
   const data = await loadCoursePage(courseId, settings, isModerator);
   if (data === "hidden") notFound();

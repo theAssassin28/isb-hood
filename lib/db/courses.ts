@@ -60,3 +60,19 @@ export async function getCourseWithOfferings(
   if (error || !data) return null;
   return { ...data, offerings: sortOfferings(data.offerings) };
 }
+
+/**
+ * Find a course from its URL segment: the course code (`MKT-501`, any case),
+ * or the older id form that links in sent emails still use.
+ */
+export async function findCourseRef(
+  by: { id: string } | { code: string },
+): Promise<{ id: string; code: string } | null> {
+  const supabase = await createClient();
+  const query = supabase.from("courses").select("id, code");
+  const { data, error } = await (
+    "id" in by ? query.eq("id", by.id) : query.eq("code", by.code.trim().toUpperCase())
+  ).maybeSingle<{ id: string; code: string }>();
+  if (error || !data) return null;
+  return data;
+}

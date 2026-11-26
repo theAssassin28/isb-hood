@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { StackSkeleton } from "@/components/skeleton";
 import { pageColumn } from "@/components/styles";
 import { requireModerator } from "@/lib/auth/session";
 import { getSettings } from "@/lib/db/settings";
@@ -16,7 +17,7 @@ export default function SettingsPage() {
         Dates are calendar days in India. Every change is recorded with your name.
       </p>
       <div className="mt-6">
-        <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
+        <Suspense fallback={<StackSkeleton label="Loading…" />}>
           <Current />
         </Suspense>
       </div>

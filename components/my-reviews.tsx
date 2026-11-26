@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { MyReviewSummary } from "@/lib/db/reviews";
 import { card } from "./styles";
+import { courseHref } from "@/lib/routes";
 
 const STATUS_LABEL: Record<MyReviewSummary["status"], string> = {
   draft: "Draft, not published",
@@ -38,7 +39,7 @@ export function MyReviewsList({ reviews }: { reviews: MyReviewSummary[] }) {
               ) : null}
               {review.status === "live" && !waitingOnOffering ? (
                 <Link
-                  href={`/courses/${review.offering.course.id}#review-${review.id}`}
+                  href={`${courseHref(review.offering.course.code)}#review-${review.id}`}
                   className="inline-flex min-h-11 items-center text-brand underline underline-offset-4"
                 >
                   See it on the course page
