@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Hedvig_Letters_Serif } from "next/font/google";
 import { DemoBanner } from "@/components/demo-banner";
 import { LegalLinks } from "@/components/legal-links";
+import { ThemeScript } from "@/components/theme-script";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
@@ -38,7 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <ThemeScript code={THEME_SCRIPT} />
       </head>
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
         <DemoBanner />
