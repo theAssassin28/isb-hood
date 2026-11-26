@@ -136,3 +136,14 @@ Deliberate shortcuts. Each one is a choice, not an oversight. Add to this list w
 | Phones have `overscroll-behavior-y: none`                                                              | No rubber-band bounce, but also no pull-to-refresh in mobile browsers                                                                                                                                             |
 | On phones with the tab bar, `<body>` is the scroll container, not the window (`app/globals.css`)       | Mobile browsers no longer hide their address bar while scrolling; code that scrolls must call `document.body.scrollTo` as well as `window.scrollTo`; the tab bar resets the scroll to the top on each page change |
 | Course URLs use the code; some internal links (admin flags queue, email reply links) still pass the id | They work through a redirect, one extra hop                                                                                                                                                                       |
+
+## From careers and the pathway pages (26 Nov)
+
+| Shortcut                                                                | Consequence                                                                                                                                        |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Career forms are one page with a preview; no autosave or drafts         | Leaving the page loses what was typed. The course review form autosaves; add the same if alumni abandon the playbook form                          |
+| The daily digest email covers course reviews only                       | People on the daily digest get no email about questions on their career entries. Instant emails do cover them                                      |
+| Pathway pages and the career list read every live entry on each request | Fine for tens of entries; add paging or a cached summary if it reaches hundreds                                                                    |
+| Sample company notes name real firms with made-up content               | Demo only (`lib/demo/seed-careers.ts`). Do not show the demo publicly as if the notes were real                                                    |
+| No event for opening a pathway page                                     | Only `career_entry_viewed` counts as a career view (plan 8.1 has no pathway event). Add one to the plan first if the pathway's use needs measuring |
+| The demo opens careers (`careers_read_open`, `careers_write_open`)      | The real defaults stay off until the dates in plan section 7                                                                                       |

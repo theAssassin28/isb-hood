@@ -11,6 +11,7 @@ import {
   PEOPLE,
   REVIEWS,
 } from "./seed-data";
+import { CAREER_COMMENTS, careerId, COMPANY_NOTES, PLAYBOOKS } from "./seed-careers";
 
 // An in-memory stand-in for the ISB Hood database, used by the clickable demo
 // (no Supabase). It mirrors the parts of supabase/migrations that the screens
@@ -68,6 +69,13 @@ export function newId(d: Db, kind = "9"): string {
 
 const str = (v: unknown) => (typeof v === "string" ? v : null);
 
+/** The entry a comment hangs off: a course review or a career entry. */
+function entryOf(d: Db, comment: Row): Row | undefined {
+  return comment.entry_type === "career_entry"
+    ? d.career_entries.find((e) => e.id === comment.entry_id)
+    : d.course_reviews.find((r) => r.id === comment.entry_id);
+}
+
 // ------------------------------------------------------------------ seeding
 function seed(): Db {
   const d: Db = {
@@ -102,6 +110,8 @@ function seed(): Db {
   const settings = {
     ...DEFAULT_SETTINGS,
     yl_read_open: true,
+    careers_write_open: true,
+    careers_read_open: true,
     bid_window: { start: shiftDay(today, -8), end: shiftDay(today, -2) },
     post_bid_survey_window: { start: shiftDay(today, -1), end: shiftDay(today, 6) },
     career_followup_deadline: shiftDay(today, 30),
@@ -245,6 +255,88 @@ function seed(): Db {
     }
   });
 
+  // Career entries (lib/demo/seed-careers.ts): playbooks, then company notes.
+  const entryId = new Map<string, string>();
+  const courseByCodeForCareers = new Map(COURSES.map((c) => [c.code, c.id]));
+  const pushEntry = (row: Row, key: string, author: string, days: number, status: string) => {
+    const eid = careerId(entryId.size + 1);
+    entryId.set(key, eid);
+    const at = daysAgo(days);
+    d.career_entries.push({
+      id: eid,
+      author_id: author,
+      open_to_questions: true,
+      status,
+      on_behalf_of_name: null,
+      on_behalf_of_cohort: null,
+      form_seconds: 420 + ((entryId.size * 53) % 300),
+      created_at: at,
+      updated_at: at,
+      published_at: status === "live" ? at : null,
+      ...row,
+    });
+    event(
+      author,
+      "entry_submitted",
+      {
+        entry_type: row.type as string,
+        contributor_cohort: PEOPLE.find((x) => x.id === author)?.cohort ?? null,
+        form_seconds: 420,
+      },
+      at,
+    );
+    return eid;
+  };
+  for (const pb of PLAYBOOKS) {
+    const eid = pushEntry(
+      {
+        type: "playbook",
+        visibility: pb.anonymous ? "anonymous" : "named",
+        track: pb.to.track,
+        company: pb.to.company ?? null,
+        from_function: pb.from.function,
+        from_industry: pb.from.industry,
+        from_years_band: pb.from.years_band,
+        body: {
+          from: pb.from,
+          to: pb.to,
+          path: pb.path,
+          numbers: pb.numbers,
+          what_mattered: pb.mattered,
+          latest_safe_start: pb.latest_safe_start,
+          mistakes_to_avoid: pb.mistakes_to_avoid,
+        },
+      },
+      pb.key,
+      pb.author,
+      pb.daysAgo,
+      pb.status ?? "live",
+    );
+    for (const code of pb.courses) {
+      const courseId = courseByCodeForCareers.get(code);
+      if (courseId) d.career_entry_courses.push({ entry_id: eid, course_id: courseId });
+    }
+  }
+  for (const cn of COMPANY_NOTES) {
+    const { key, author, anonymous, daysAgo: days, ...body } = cn;
+    pushEntry(
+      {
+        type: "company_note",
+        visibility: anonymous ? "anonymous" : "named",
+        track: cn.track,
+        company: cn.company,
+        from_function: null,
+        from_industry: null,
+        from_years_band: null,
+        body,
+      },
+      key,
+      author,
+      days,
+      "live",
+    );
+  }
+
   const commentId = new Map<string, string>();
   COMMENTS.forEach((c, i) => {
     const cid = id("f", i + 1);
@@ -261,10 +353,25 @@ function seed(): Db {
       first_reply_at: null,
     });
   });
+  CAREER_COMMENTS.forEach((c, i) => {
+    const cid = id("0f", i + 1);
+    commentId.set(c.key, cid);
+    d.comments.push({
+      id: cid,
+      entry_type: "career_entry",
+      entry_id: entryId.get(c.entry),
+      parent_id: c.replyTo ? commentId.get(c.replyTo) : null,
+      author_id: c.author,
+      body: c.body,
+      status: "live",
+      created_at: hoursAgo(c.hoursAgo),
+      first_reply_at: null,
+    });
+  });
   // First author replies, as the database trigger would have stamped them.
   for (const c of d.comments) {
     if (!c.parent_id) continue;
-    const review = d.course_reviews.find((r) => r.id === c.entry_id);
+    const review = entryOf(d, c);
     const question = d.comments.find((q) => q.id === c.parent_id);
     if (review && question && review.author_id === c.author_id && !question.first_reply_at) {
       question.first_reply_at = c.created_at;
@@ -307,20 +414,8 @@ function seed(): Db {
     }
   });
 
-  // Ravi viewed a Term 7 course page during bidding, so the post-bid survey is due for him.
-  const pricing = COURSES[0].id;
-  event(
-    P.ravi,
-    "course_page_viewed",
-    { course_id: pricing, review_count: 3, has_new_or_changed_flag: true, current_term: "Term 7" },
-    daysAgo(5),
-  );
-  event(
-    P.ravi,
-    "value_reached",
-    { module: "courses", trigger: "course_page_3_plus_reviews", entry_id: pricing },
-    daysAgo(5),
-  );
+  // Ravi has used the app before but has not opened a Term 7 course page yet, so the
+  // post-bid survey prompt appears only after he opens one in the demo and comes back home.
   event(
     P.ravi,
     "return_visit",
@@ -349,6 +444,10 @@ function seed(): Db {
     chatClicks,
     chatEarlyAccess,
     formAbandoned,
+    careerReaders,
+    careerValue,
+    findPeopleClicks,
+    findPeopleContacts,
   } = BACKGROUND;
   const total = pgpReaders + ylReaders;
   const answers = [
@@ -381,7 +480,7 @@ function seed(): Db {
       source: ["whatsapp_group", "friend", "team_email"][i % 3],
       notify_pref: "instant",
       early_access_chat: i < chatEarlyAccess,
-      early_access_people: false,
+      early_access_people: i < findPeopleContacts,
       profile_completed_at: signed,
       created_at: signed,
       deleted_at: null,
@@ -402,6 +501,18 @@ function seed(): Db {
       event(uid, "value_reached", { module: "courses" }, signed);
     if (i % Math.round(1 / returnShare) === 0)
       event(uid, "return_visit", { day: `bg-${i}`, module: "courses" }, signed);
+    if (i < careerReaders) {
+      const at = daysAgo(1 + (i % 5));
+      event(uid, "career_entry_viewed", { entry_type: "playbook" }, at);
+      if (i < careerValue) event(uid, "value_reached", { module: "career" }, at);
+      if (i < findPeopleClicks)
+        event(
+          uid,
+          "fake_door_clicked",
+          { door: "find_people", left_contact: i < findPeopleContacts },
+          at,
+        );
+    }
     if (i < chatClicks)
       event(
         uid,
@@ -522,15 +633,56 @@ export function courseReviewsPublic(d: Db, uid: string | null): Row[] {
   return out;
 }
 
+/** 0002 career_entries_public: live entries, author shown the way they chose. */
+export function careerEntriesPublic(d: Db, uid: string | null): Row[] {
+  if (!canRead(d, uid)) return [];
+  const out: Row[] = [];
+  for (const e of d.career_entries) {
+    if (e.status !== "live") continue;
+    const p = d.profiles.find((x) => x.id === e.author_id);
+    if (!p) continue;
+    const named = e.visibility === "named";
+    const behalf = str(e.on_behalf_of_name);
+    const published = str(e.published_at);
+    out.push({
+      id: e.id,
+      type: e.type,
+      visibility: e.visibility,
+      open_to_questions: e.open_to_questions,
+      track: e.track,
+      company: e.company,
+      from_function: e.from_function,
+      from_industry: e.from_industry,
+      from_years_band: e.from_years_band,
+      body: e.body,
+      published_at: e.published_at,
+      updated_at: e.updated_at,
+      is_edited: published
+        ? Date.parse(String(e.updated_at)) > Date.parse(published) + 60_000
+        : false,
+      author_id: named && !behalf ? e.author_id : null,
+      author_display:
+        behalf && named
+          ? `${behalf}, ${str(e.on_behalf_of_cohort) ?? "alum"}`
+          : named
+            ? `${str(p.full_name) ?? "ISB student"}, ${str(p.cohort) ?? ""}`
+            : `Verified ${str(e.on_behalf_of_cohort) ?? str(p.cohort) ?? "ISB"} student`,
+      author_cohort: str(e.on_behalf_of_cohort) ?? p.cohort,
+      match_function: e.from_function ?? p.background_function,
+      match_industry: e.from_industry ?? p.background_industry,
+      entered_by_team: !!behalf,
+      is_mine: e.author_id === uid,
+    });
+  }
+  return out;
+}
+
 export function commentsPublic(d: Db, uid: string | null): Row[] {
   if (!canRead(d, uid)) return [];
   const out: Row[] = [];
   for (const c of d.comments) {
     if (c.status !== "live") continue;
-    const entry =
-      c.entry_type === "course_review"
-        ? d.course_reviews.find((r) => r.id === c.entry_id)
-        : d.career_entries.find((e) => e.id === c.entry_id);
+    const entry = entryOf(d, c);
     if (!entry || entry.status !== "live") continue;
     const p = d.profiles.find((x) => x.id === c.author_id);
     if (!p) continue;
@@ -560,7 +712,7 @@ export function commentsPublic(d: Db, uid: string | null): Row[] {
 export const VIEWS: Record<string, (d: Db, uid: string | null) => Row[]> = {
   course_reviews_public: courseReviewsPublic,
   comments_public: commentsPublic,
-  career_entries_public: () => [],
+  career_entries_public: careerEntriesPublic,
 };
 
 // ---------------------------------------------------------------- triggers
@@ -592,19 +744,28 @@ export function entryStatusTrigger(
 /** May this person post this comment? (0007 can_comment) */
 export function canComment(d: Db, uid: string | null, row: Row): boolean {
   if (!canRead(d, uid)) return false;
-  const review = d.course_reviews.find((r) => r.id === row.entry_id);
-  if (!review || review.status !== "live") return false;
-  const o = d.offerings.find((x) => x.id === review.offering_id);
-  if (!o || o.status !== "approved") return false;
-  if (!row.parent_id) return review.open_to_questions === true;
+  if (row.entry_type !== "course_review" && row.entry_type !== "career_entry") return false;
+  const entry = entryOf(d, row);
+  if (!entry || entry.status !== "live") return false;
+  if (row.entry_type === "course_review") {
+    const o = d.offerings.find((x) => x.id === entry.offering_id);
+    if (!o || o.status !== "approved") return false;
+  }
+  if (!row.parent_id) return entry.open_to_questions === true;
   const q = d.comments.find((c) => c.id === row.parent_id);
-  return !!q && !q.parent_id && q.status === "live" && q.entry_id === row.entry_id;
+  return (
+    !!q &&
+    !q.parent_id &&
+    q.status === "live" &&
+    q.entry_type === row.entry_type &&
+    q.entry_id === row.entry_id
+  );
 }
 
 /** After a reply: stamp the question when the entry's author first answers (0002 stamp_first_reply). */
 export function stampFirstReply(d: Db, row: Row): void {
   if (!row.parent_id) return;
-  const review = d.course_reviews.find((r) => r.id === row.entry_id);
+  const review = entryOf(d, row);
   const q = d.comments.find((c) => c.id === row.parent_id);
   if (review && q && review.author_id === row.author_id && !q.first_reply_at)
     q.first_reply_at = row.created_at;
@@ -757,7 +918,7 @@ export function rpc(d: Db, uid: string | null, admin: boolean, name: string, arg
           const c = d.outreach_contacts.find((x) => x.id === args.contact);
           if (c) c.claimed_by = target.id;
         }
-        for (const r of d.course_reviews) {
+        for (const r of [...d.course_reviews, ...d.career_entries]) {
           if (r.author_id === target.id && r.status === "pending_verification") {
             r.status = "live";
             r.published_at ??= iso(now());

@@ -30,17 +30,17 @@ With no Supabase keys in `.env.local`, the app runs as a clickable prototype on 
 
 Other sample people (the four primary personas are in [PERSONAS.md](PERSONAS.md)):
 
-| Person             | Shows                                                           |
-| ------------------ | --------------------------------------------------------------- |
-| Ravi, PGP Co'27    | Reading, asking a question, the post-bid survey, his own review |
-| Meera, PGP YL      | The YL reader view                                              |
-| Asha, Co'26 alum   | Writing a named review, answering questions                     |
-| Kiran, Co'26 alum  | An anonymous author answering as "Author"                       |
-| Dev, Co'25 alum    | A contributor still waiting for verification                    |
-| Nisha, moderator   | Verifying Dev, flags, imports, metrics                          |
-| Rohan, new student | Onboarding                                                      |
+| Person             | Shows                                                                                                                                        |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ravi, PGP Co'27    | Reading, asking a question, careers and "Like me", his own review. The post-bid survey prompt appears on Home after he opens a Term 7 course |
+| Meera, PGP YL      | The YL reader view                                                                                                                           |
+| Asha, Co'26 alum   | Writing a named review, playbook or company note; answering questions                                                                        |
+| Kiran, Co'26 alum  | An anonymous author answering as "Author"                                                                                                    |
+| Dev, Co'25 alum    | A contributor still waiting for verification; his review and playbook are held                                                               |
+| Nisha, moderator   | Verifying Dev, flags, imports, metrics                                                                                                       |
+| Rohan, new student | Onboarding                                                                                                                                   |
 
-The data lives in `lib/demo/seed-data.ts`; edit it and press Reset. Changes made while clicking are kept in memory by the server process only, so they vanish on restart. Present from `pnpm dev` (or `pnpm build && pnpm start`) on a laptop; a serverless host would lose them between requests. Email, PostHog and the daily job do nothing in the demo.
+The data lives in `lib/demo/seed-data.ts` (people, courses, reviews) and `lib/demo/seed-careers.ts` (playbooks, company notes); edit them and press Reset. Changes made while clicking are kept in memory by the server process only, so they vanish on restart. Present from `pnpm dev` (or `pnpm build && pnpm start`) on a laptop; a serverless host would lose them between requests. Email, PostHog and the daily job do nothing in the demo.
 
 Before launch, check the live site: `/sample-accounts` must return "not found" and the sign-in page must not show the "Prototype" note. Both mean demo mode is off.
 

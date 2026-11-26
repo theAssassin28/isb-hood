@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { MyCareerEntriesList } from "@/components/my-career-entries";
 import { StackSkeleton } from "@/components/skeleton";
 import { MyReviewsList } from "@/components/my-reviews";
 import { SurveyPrompt } from "@/components/survey-prompt";
 import { card, notice, pageColumn } from "@/components/styles";
 import { requireWriter } from "@/lib/auth/session";
+import { listMyCareerEntries } from "@/lib/db/careers";
 import { listComments } from "@/lib/db/comments";
 import { listMyReviews } from "@/lib/db/reviews";
 import { buildThreads, waitingForMe } from "@/lib/domain/threads";
@@ -30,14 +32,35 @@ export default function MyActivityPage({ searchParams }: PageProps<"/me">) {
 
 async function Activity({ searchParams }: { searchParams: PageProps<"/me">["searchParams"] }) {
   const { profile } = await requireWriter();
-  const [params, mine] = await Promise.all([searchParams, listMyReviews(profile.id)]);
+  const [params, mine, careers] = await Promise.all([
+    searchParams,
+    listMyReviews(profile.id),
+    listMyCareerEntries(profile.id),
+  ]);
 
   const live = (mine ?? []).filter((r) => r.status === "live");
-  const comments = await listComments(
-    "course_review",
-    live.map((r) => r.id),
-  );
-  const titleOf = new Map(live.map((r) => [r.id, r.offering.course.title]));
+  const liveCareers = (careers ?? []).filter((e) => e.status === "live");
+  const [reviewComments, careerComments] = await Promise.all([
+    listComments(
+      "course_review",
+      live.map((r) => r.id),
+    ),
+    listComments(
+      "career_entry",
+      liveCareers.map((e) => e.id),
+    ),
+  ]);
+  const comments =
+    reviewComments === null || careerComments === null
+      ? null
+      : [...reviewComments, ...careerComments];
+  const titleOf = new Map<string, string>([
+    ...live.map((r) => [r.id, `${r.offering.course.title} review`] as [string, string]),
+    ...liveCareers.map(
+      (e) =>
+        [e.id, e.type === "playbook" ? "playbook" : `${e.company ?? ""} note`] as [string, string],
+    ),
+  ]);
   const waiting = waitingForMe([...buildThreads(comments ?? []).values()].flat());
 
   return (
@@ -63,7 +86,7 @@ async function Activity({ searchParams }: { searchParams: PageProps<"/me">["sear
           </p>
         ) : waiting.length === 0 ? (
           <p className="mt-2 text-sm text-muted-foreground">
-            None right now. When a reader asks about one of your reviews, it appears here and we
+            None right now. When a reader asks about one of your entries, it appears here and we
             email you.
           </p>
         ) : (
@@ -71,7 +94,7 @@ async function Activity({ searchParams }: { searchParams: PageProps<"/me">["sear
             {waiting.map(({ question }) => (
               <li key={question.id} className={card}>
                 <p className="text-sm text-muted-foreground">
-                  {question.author_display} on your {titleOf.get(question.entry_id) ?? ""} review
+                  {question.author_display} on your {titleOf.get(question.entry_id) ?? "entry"}
                 </p>
                 <p className="mt-1 text-sm break-words whitespace-pre-line text-foreground">
                   {question.body}
@@ -107,6 +130,15 @@ async function Activity({ searchParams }: { searchParams: PageProps<"/me">["sear
           <MyReviewsList reviews={mine} />
         )}
       </section>
+
+      {careers && careers.length > 0 ? (
+        <section aria-labelledby="careers-heading">
+          <h2 id="careers-heading" className="type-heading">
+            Your career entries
+          </h2>
+          <MyCareerEntriesList entries={careers} />
+        </section>
+      ) : null}
 
       <section id="notifications" aria-labelledby="notify-heading" className="scroll-mt-4">
         <h2 id="notify-heading" className="type-heading">

@@ -175,13 +175,17 @@ describe("demo writes", () => {
     expect((await insert()).error?.code).toBe("23505");
   });
 
-  it("show the post-bid survey to Ravi only", async () => {
-    expect(
-      ((await as(P.ravi).rpc("my_survey_status")).data as { post_bid: boolean }).post_bid,
-    ).toBe(true);
-    expect(
-      ((await as(P.asha).rpc("my_survey_status")).data as { post_bid: boolean }).post_bid,
-    ).toBe(false);
+  it("show the post-bid survey to Ravi only after he opens a Term 7 course", async () => {
+    const due = async (uid: string) =>
+      ((await as(uid).rpc("my_survey_status")).data as { post_bid: boolean }).post_bid;
+    expect(await due(P.ravi)).toBe(false);
+    await admin.from("events").insert({
+      user_id: P.ravi,
+      name: "course_page_viewed",
+      props: { course_id: COURSES[0].id, current_term: "Term 7" },
+    });
+    expect(await due(P.ravi)).toBe(true);
+    expect(await due(P.asha)).toBe(false);
   });
 });
 

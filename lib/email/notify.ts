@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { siteUrl } from "@/lib/supabase/env";
+import { functionLabel, trackShort } from "@/lib/domain/careers";
 import { sendEmail } from "./send";
 import { answerEmail, newCommentEmail, editRequestEmail } from "./templates";
 
@@ -39,20 +40,51 @@ export async function notifyNewComment(commentId: string): Promise<void> {
       author_id: string;
       body: string;
     }>();
-  if (!comment || comment.entry_type !== "course_review") return;
+  if (!comment) return;
 
-  const { data: review } = await admin
-    .from("course_reviews")
-    .select("id, author_id, visibility, offering:offerings!inner(course:courses!inner(title))")
-    .eq("id", comment.entry_id)
-    .maybeSingle<{
-      id: string;
-      author_id: string;
-      visibility: string;
-      offering: { course: { title: string } };
-    }>();
+  // The entry under which the comment was posted: its author, how it is shown, and its title.
+  let review: { author_id: string; visibility: string } | null = null;
+  let courseTitle = "";
+  let noun = "review";
+  if (comment.entry_type === "course_review") {
+    const { data } = await admin
+      .from("course_reviews")
+      .select("id, author_id, visibility, offering:offerings!inner(course:courses!inner(title))")
+      .eq("id", comment.entry_id)
+      .maybeSingle<{
+        id: string;
+        author_id: string;
+        visibility: string;
+        offering: { course: { title: string } };
+      }>();
+    if (data) {
+      review = data;
+      courseTitle = data.offering.course.title;
+    }
+  } else if (comment.entry_type === "career_entry") {
+    const { data } = await admin
+      .from("career_entries")
+      .select("id, type, author_id, visibility, track, company, from_function")
+      .eq("id", comment.entry_id)
+      .maybeSingle<{
+        id: string;
+        type: string;
+        author_id: string;
+        visibility: string;
+        track: string | null;
+        company: string | null;
+        from_function: string | null;
+      }>();
+    if (data) {
+      review = data;
+      noun = data.type === "playbook" ? "playbook" : "company note";
+      courseTitle =
+        data.type === "playbook"
+          ? `${functionLabel(data.from_function).split(" / ")[0]} → ${trackShort(data.track)}`
+          : (data.company ?? "company");
+    }
+  }
   if (!review) return;
-  const courseTitle = review.offering.course.title;
 
   const { data: commenter } = await admin
     .from("profiles")
@@ -75,6 +107,7 @@ export async function notifyNewComment(commentId: string): Promise<void> {
         refId: comment.id,
         email: newCommentEmail({
           courseTitle,
+          noun,
           commenter: commenter ? displayName(commenter) : "Someone",
           body: comment.body,
           isQuestion: comment.parent_id === null,

@@ -12,7 +12,7 @@ export function FlagButton({
   targetId,
   label = "Flag",
 }: {
-  targetType: "course_review" | "comment";
+  targetType: "course_review" | "career_entry" | "comment";
   targetId: string;
   label?: string;
 }) {

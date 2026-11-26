@@ -39,6 +39,7 @@ const RELATIONS: Record<
   offerings: { courses: { kind: "one", local: "course_id" } },
   courses: { offerings: { kind: "many", foreign: "course_id" } },
   comments: { profiles: { kind: "one", local: "author_id" } },
+  career_entries: { profiles: { kind: "one", local: "author_id" } },
 };
 
 type Field =

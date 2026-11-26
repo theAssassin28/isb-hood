@@ -23,7 +23,18 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/reply/[comme
     .select("id, entry_type, entry_id, parent_id")
     .eq("id", commentId)
     .maybeSingle<{ id: string; entry_type: string; entry_id: string; parent_id: string | null }>();
-  if (!comment || comment.entry_type !== "course_review") return to("/me?gone=1");
+  if (!comment) return to("/me?gone=1");
+  const thread = comment.parent_id ?? comment.id;
+
+  if (comment.entry_type === "career_entry") {
+    const { data: entry } = await supabase
+      .from("career_entries_public")
+      .select("id")
+      .eq("id", comment.entry_id)
+      .maybeSingle<{ id: string }>();
+    if (!entry) return to("/me?gone=1");
+    return to(`/careers/${entry.id}?thread=${thread}#thread-${thread}`);
+  }
 
   const { data: review } = await supabase
     .from("course_reviews_public")
@@ -31,7 +42,5 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/reply/[comme
     .eq("id", comment.entry_id)
     .maybeSingle<{ course_id: string }>();
   if (!review) return to("/me?gone=1");
-
-  const thread = comment.parent_id ?? comment.id;
   return to(`/courses/${review.course_id}?thread=${thread}#thread-${thread}`);
 }

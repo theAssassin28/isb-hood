@@ -2,21 +2,24 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { StackSkeleton } from "@/components/skeleton";
 import { MyReviewsList } from "@/components/my-reviews";
-import { notice, pageColumn } from "@/components/styles";
+import Link from "next/link";
+import { cardFrame, notice, pageColumn } from "@/components/styles";
 import { requireWriter } from "@/lib/auth/session";
 import { listCoursesWithOfferings } from "@/lib/db/courses";
 import { listMyReviews } from "@/lib/db/reviews";
+import { getSettings } from "@/lib/db/settings";
+import { careerWritingOpenTo } from "@/lib/domain/settings";
 import { CoursePicker, type PickerCourse } from "./course-picker";
 
 export const metadata: Metadata = { title: "Write · ISB Hood" };
 
-// Career entries join this screen in M7 (docs/BUILD_PLAN.md 4.1).
+// Write: a course review, a track playbook or a company note (docs/BUILD_PLAN.md 4.1).
 export default function WritePage() {
   return (
     <main className={pageColumn}>
-      <h1 className="type-title">Write a course review</h1>
+      <h1 className="type-title">Write</h1>
       <p className="mt-2 text-foreground/80">
-        About 5 minutes. Your answers are saved as you go, so you can stop and come back.
+        What you learned, for the batch behind you. Every rating needs a reason.
       </p>
       <div className="mt-6">
         <Suspense fallback={<StackSkeleton label="Loading courses…" />}>
@@ -29,10 +32,12 @@ export default function WritePage() {
 
 async function Write() {
   const { profile } = await requireWriter();
-  const [courses, mine] = await Promise.all([
+  const [courses, mine, settings] = await Promise.all([
     listCoursesWithOfferings(),
     listMyReviews(profile.id),
+    getSettings(),
   ]);
+  const careers = careerWritingOpenTo(profile, settings);
 
   if (!courses) {
     return (
@@ -55,6 +60,37 @@ async function Write() {
 
   return (
     <>
+      {careers ? (
+        <section className="mb-10" aria-labelledby="career-write-heading">
+          <h2 id="career-write-heading" className="type-heading">
+            Your career move
+          </h2>
+          <ul className="mt-3 space-y-3">
+            {(
+              [
+                [
+                  "/write/playbook",
+                  "Track playbook",
+                  "How you got into your track, term by term. About 10 minutes.",
+                ],
+                [
+                  "/write/company-note",
+                  "Company note",
+                  "One company’s process, what they asked, what prep worked. About 5 minutes.",
+                ],
+              ] as const
+            ).map(([href, title, text]) => (
+              <li key={href} className={cardFrame}>
+                <Link href={href} className="block rounded-lg p-5 hover:bg-background">
+                  <span className="block font-semibold text-foreground">{title}</span>
+                  <span className="mt-1 block text-sm text-muted-foreground">{text}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       {mine && mine.length > 0 ? (
         <section className="mb-8">
           <h2 className="type-heading">Your reviews</h2>
@@ -64,7 +100,11 @@ async function Write() {
 
       <section>
         <h2 className="type-heading">
-          {mine && mine.length > 0 ? "Review another course" : "Which course?"}
+          {mine && mine.length > 0
+            ? "Review another course"
+            : careers
+              ? "A course review: which course?"
+              : "Which course?"}
         </h2>
         <div className="mt-3">
           {picker.length === 0 ? (

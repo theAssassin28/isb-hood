@@ -7,7 +7,9 @@ import { ActionButton } from "./action-button";
 import { FlagButton } from "./flag-button";
 import { fieldInput, primaryButtonInline, secondaryButton } from "./styles";
 
-// Questions and answers under one review (docs/BUILD_PLAN.md 4.7).
+// Questions and answers under one review or career entry (docs/BUILD_PLAN.md 4.7).
+
+type EntryType = "course_review" | "career_entry";
 
 const formatDay = (iso: string) =>
   new Intl.DateTimeFormat("en-IN", {
@@ -17,12 +19,14 @@ const formatDay = (iso: string) =>
   }).format(new Date(iso));
 
 export function ReviewThread({
+  entryType = "course_review",
   entryId,
   threads,
   openToQuestions,
   isMyEntry,
   openThreadId,
 }: {
+  entryType?: EntryType;
   entryId: string;
   threads: Thread[];
   openToQuestions: boolean;
@@ -57,6 +61,7 @@ export function ReviewThread({
         {threads.map((thread) => (
           <ThreadView
             key={thread.question.id}
+            entryType={entryType}
             entryId={entryId}
             thread={thread}
             isMyEntry={isMyEntry}
@@ -72,6 +77,7 @@ export function ReviewThread({
           ) : null
         ) : openToQuestions ? (
           <CommentForm
+            entryType={entryType}
             entryId={entryId}
             parentId={null}
             label="Ask the author"
@@ -80,7 +86,8 @@ export function ReviewThread({
           />
         ) : (
           <p className="text-sm text-muted-foreground">
-            The author is not taking new questions on this review.
+            The author is not taking new questions on this{" "}
+            {entryType === "career_entry" ? "entry" : "review"}.
           </p>
         )}
       </div>
@@ -89,11 +96,13 @@ export function ReviewThread({
 }
 
 function ThreadView({
+  entryType,
   entryId,
   thread,
   isMyEntry,
   focus,
 }: {
+  entryType: EntryType;
   entryId: string;
   thread: Thread;
   isMyEntry: boolean;
@@ -129,6 +138,7 @@ function ThreadView({
       <div className="mt-1 pl-3">
         {replying ? (
           <CommentForm
+            entryType={entryType}
             entryId={entryId}
             parentId={question.id}
             label={isMyEntry ? "Your answer" : "Your reply"}
@@ -160,7 +170,7 @@ function CommentView({ comment }: { comment: PublicComment }) {
           <span className="type-tag">Author</span>
         ) : null}
         {comment.is_entry_author && comment.author_display === "Author" ? (
-          <span className="sr-only">(the review’s author)</span>
+          <span className="sr-only">(the entry’s author)</span>
         ) : null}
         <span>{formatDay(comment.created_at)}</span>
       </p>
@@ -188,6 +198,7 @@ function CommentView({ comment }: { comment: PublicComment }) {
 const initial: CommentState = { status: "idle", message: null, sentAt: 0 };
 
 function CommentForm({
+  entryType,
   entryId,
   parentId,
   label,
@@ -196,6 +207,7 @@ function CommentForm({
   autoFocus,
   onCancel,
 }: {
+  entryType: EntryType;
   entryId: string;
   parentId: string | null;
   label: string;
@@ -221,6 +233,7 @@ function CommentForm({
 
   return (
     <form action={formAction} className="space-y-2">
+      <input type="hidden" name="entry_type" value={entryType} />
       <input type="hidden" name="entry_id" value={entryId} />
       {parentId ? <input type="hidden" name="parent_id" value={parentId} /> : null}
       <label htmlFor={id} className="block text-sm font-medium text-foreground">

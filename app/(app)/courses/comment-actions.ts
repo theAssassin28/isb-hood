@@ -32,6 +32,8 @@ export async function postComment(
   const { profile } = await requireReader();
   const fail = (message: string): CommentState => ({ ...previous, status: "error", message });
 
+  const entryType =
+    formData.get("entry_type") === "career_entry" ? "career_entry" : "course_review";
   const entryId = uuid(formData.get("entry_id"));
   const parentRaw = formData.get("parent_id");
   const parentId = parentRaw ? uuid(parentRaw) : null;
@@ -59,11 +61,12 @@ export async function postComment(
   }
 
   const { data: review } = await supabase
-    .from("course_reviews_public")
+    .from(entryType === "career_entry" ? "career_entries_public" : "course_reviews_public")
     .select("id, is_mine")
     .eq("id", entryId)
     .maybeSingle<{ id: string; is_mine: boolean }>();
-  if (!review) return fail("This review is no longer available.");
+  const noun = entryType === "career_entry" ? "entry" : "review";
+  if (!review) return fail(`This ${noun} is no longer available.`);
 
   let question: { created_at: string; first_reply_at: string | null; is_mine: boolean } | null =
     null;
@@ -80,7 +83,7 @@ export async function postComment(
   const { data: inserted, error } = await supabase
     .from("comments")
     .insert({
-      entry_type: "course_review",
+      entry_type: entryType,
       entry_id: entryId,
       parent_id: parentId,
       author_id: profile.id,
@@ -92,13 +95,13 @@ export async function postComment(
     // Row level security refuses comments the rules do not allow (plan 4.7).
     return fail(
       error?.code === "42501"
-        ? "The author is not taking new questions on this review."
+        ? `The author is not taking new questions on this ${noun}.`
         : "Your comment was not posted. Check your connection and try again.",
     );
   }
 
   await track(profile.id, "comment_posted", {
-    entry_type: "course_review",
+    entry_type: entryType,
     entry_id: entryId,
     is_question: parentId === null,
   });
@@ -126,7 +129,7 @@ export async function postComment(
         .maybeSingle<{ author_id: string }>();
       if (asker && asker.author_id !== profile.id) {
         await trackOnceForOther(asker.author_id, {
-          module: "courses",
+          module: entryType === "career_entry" ? "career" : "courses",
           trigger: "author_reply_received",
           entry_id: entryId,
         });
@@ -166,7 +169,10 @@ export async function flagContent(_previous: FlagState, formData: FormData): Pro
   const targetType = formData.get("target_type");
   const targetId = uuid(formData.get("target_id"));
   const reason = flagText(String(formData.get("reason") ?? ""), String(formData.get("note") ?? ""));
-  if ((targetType !== "course_review" && targetType !== "comment") || !targetId) {
+  if (
+    (targetType !== "course_review" && targetType !== "career_entry" && targetType !== "comment") ||
+    !targetId
+  ) {
     return { status: "error", message: "Reload the page and try again." };
   }
   if (!reason) return { status: "error", message: "Choose a reason." };

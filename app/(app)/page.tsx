@@ -12,7 +12,7 @@ import {
 import { SurveyPrompt } from "@/components/survey-prompt";
 import { requireProfile } from "@/lib/auth/session";
 import { getSettings } from "@/lib/db/settings";
-import { coursesOpenTo } from "@/lib/domain/settings";
+import { careersOpenTo, coursesOpenTo } from "@/lib/domain/settings";
 
 // Home (docs/BUILD_PLAN.md 4.3).
 export default function HomePage() {
@@ -72,6 +72,7 @@ async function Home() {
 
   const settings = await getSettings();
   const canReadCourses = coursesOpenTo(profile, settings);
+  const canReadCareers = careersOpenTo(profile, settings);
 
   return (
     <>
@@ -133,13 +134,29 @@ async function Home() {
             </div>
           )}
         </li>
-        <li className={`${card} flex flex-col`}>
-          <p className="type-heading">Careers</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Term-by-term paths and company notes from people who made the same move from your
-            background.
-          </p>
-          <span className="mt-auto pt-5 type-status text-muted-foreground">Opening soon</span>
+        <li className={`${cardFrame} flex flex-col`}>
+          {canReadCareers ? (
+            <Link
+              href="/careers"
+              className="flex flex-1 flex-col rounded-lg p-6 hover:bg-background"
+            >
+              <span className="type-heading block">Careers</span>
+              <span className="mt-2 block text-sm text-muted-foreground">
+                Term-by-term pathways into each track and company notes, from people who made the
+                same move from your background.
+              </span>
+              <span className="mt-auto pt-5 text-sm font-medium text-brand">See pathways →</span>
+            </Link>
+          ) : (
+            <div className="flex flex-1 flex-col p-6">
+              <p className="type-heading">Careers</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Term-by-term paths and company notes from people who made the same move from your
+                background.
+              </p>
+              <span className="mt-auto pt-5 type-status text-muted-foreground">Opening soon</span>
+            </div>
+          )}
         </li>
         <li className={`${card} flex flex-col`}>
           <p className="type-heading">Took a course others are bidding for?</p>

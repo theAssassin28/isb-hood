@@ -29,6 +29,10 @@ export const P = {
   arjun: id("a", 13),
   karan: id("a", 14),
   ishita: id("a", 15),
+  sid: id("a", 16),
+  farah: id("a", 17),
+  priya: id("a", 18),
+  rahul: id("a", 19),
 } as const;
 
 export type SeedPerson = {
@@ -253,7 +257,7 @@ export const PEOPLE: SeedPerson[] = [
     persona: {
       title: "Ravi Menon · PGP Co'27 student",
       shows:
-        "Browse and filter courses, read reviews, ask an author, the post-bid survey, his own review",
+        "Courses and reviews, careers with “Like me” (ex-consultant, BFSI, wants product), asking an author. Open a Term 7 course, go back Home: the post-bid survey appears",
       door: "reader",
     },
   }),
@@ -270,7 +274,8 @@ export const PEOPLE: SeedPerson[] = [
     completedDaysAgo: 9,
     persona: {
       title: "Meera Das · PGP YL student",
-      shows: "A YL first-year reading what Co'26 learned; she has a question waiting for an answer",
+      shows:
+        "A YL first-year reading what Co'26 learned; her questions wait for answers (a course review, a company note)",
       door: "reader",
     },
   }),
@@ -288,7 +293,8 @@ export const PEOPLE: SeedPerson[] = [
     source: "team_email",
     persona: {
       title: "Asha Rao · Co'26 alum, writes under her name",
-      shows: "A senior with reviews live, a question waiting for her answer, My activity",
+      shows:
+        "A senior with reviews, a product playbook and a company note live; a question waiting for her answer; writing a playbook",
       door: "reader",
     },
   }),
@@ -308,7 +314,8 @@ export const PEOPLE: SeedPerson[] = [
     completedDaysAgo: 18,
     persona: {
       title: "Kiran Shah · Co'26 alum, verified, writes anonymously",
-      shows: "Reviews shown as “Verified Co'26 student”; replies show as “Author”",
+      shows:
+        "Entries shown as “Verified Co'26 student” (reviews and a finance playbook); replies show as “Author”",
       door: "contributor",
     },
   }),
@@ -328,7 +335,8 @@ export const PEOPLE: SeedPerson[] = [
     completedDaysAgo: 1,
     persona: {
       title: "Dev Nair · Co'25 alum, not verified yet",
-      shows: "What an alum sees before verification: can write, cannot read",
+      shows:
+        "Before verification: can write, cannot read. His review and marketing playbook wait for Nisha",
       door: "contributor",
     },
   }),
@@ -416,6 +424,54 @@ export const PEOPLE: SeedPerson[] = [
     years_experience_band: "0-2",
     target_track: "product",
     completedDaysAgo: 17,
+  }),
+  person({
+    id: P.sid,
+    email: "siddharth.rao@isb.edu",
+    full_name: "Siddharth Rao",
+    programme: "alum",
+    cohort: "Co'26",
+    background_function: "engineering",
+    background_industry: "it_software",
+    years_experience_band: "3-5",
+    target_track: "consulting",
+    completedDaysAgo: 16,
+  }),
+  person({
+    id: P.farah,
+    email: "farah.khan@isb.edu",
+    full_name: "Farah Khan",
+    programme: "alum",
+    cohort: "Co'26",
+    background_function: "consulting",
+    background_industry: "bfsi",
+    years_experience_band: "3-5",
+    target_track: "product",
+    completedDaysAgo: 15,
+  }),
+  person({
+    id: P.priya,
+    email: "priya.bansal@isb.edu",
+    full_name: "Priya Bansal",
+    programme: "alum",
+    cohort: "Co'26",
+    background_function: "operations",
+    background_industry: "manufacturing",
+    years_experience_band: "6-8",
+    target_track: "general_management",
+    completedDaysAgo: 15,
+  }),
+  person({
+    id: P.rahul,
+    email: "rahul.verma@isb.edu",
+    full_name: "Rahul Verma",
+    programme: "alum",
+    cohort: "Co'25",
+    background_function: "public_social",
+    background_industry: "government_nonprofit",
+    years_experience_band: "3-5",
+    target_track: "other",
+    completedDaysAgo: 14,
   }),
 ];
 
@@ -1092,4 +1148,10 @@ export const BACKGROUND = {
   chatEarlyAccess: 5,
   /** People who opened the review form but did not submit. */
   formAbandoned: 6,
+  /** Readers who opened a career entry; how many saw one matching their background or track. */
+  careerReaders: 22,
+  careerValue: 14,
+  /** Career readers who clicked "Find people like me"; how many asked for early access. */
+  findPeopleClicks: 6,
+  findPeopleContacts: 3,
 };

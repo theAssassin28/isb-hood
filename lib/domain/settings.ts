@@ -112,3 +112,19 @@ export function returnVisit(
   const days = Math.round((Date.parse(today) - Date.parse(signupDay)) / 86_400_000);
   return { day: today, days_since_signup: days };
 }
+
+/** May this person read career entries yet? (careers_read_open; moderators always.) */
+export function careersOpenTo(
+  profile: { role: string },
+  settings: Pick<AppSettings, "careers_read_open">,
+): boolean {
+  return profile.role === "moderator" || settings.careers_read_open;
+}
+
+/** May this person write career entries yet? (careers_write_open; moderators always.) */
+export function careerWritingOpenTo(
+  profile: { role: string },
+  settings: Pick<AppSettings, "careers_write_open">,
+): boolean {
+  return profile.role === "moderator" || settings.careers_write_open;
+}

@@ -49,19 +49,25 @@ function button(href: string, label: string): string {
 /** To an entry's author: someone asked a question, or replied in a thread on their entry. */
 export function newCommentEmail(args: {
   courseTitle: string;
+  /** What the entry is: "review" (default), "playbook" or "company note". */
+  noun?: string;
   commenter: string;
   body: string;
   isQuestion: boolean;
   replyUrl: string;
   prefsUrl: string;
 }): Email {
+  const noun = args.noun ?? "review";
   const what = args.isQuestion ? "asked you a question" : "replied in a thread";
   const subject = args.isQuestion
-    ? `A question about your ${args.courseTitle} review`
-    : `New reply under your ${args.courseTitle} review`;
-  const intro = `${args.commenter} ${what} under your review of ${args.courseTitle}:`;
+    ? `A question about your ${args.courseTitle} ${noun}`
+    : `New reply under your ${args.courseTitle} ${noun}`;
+  const intro =
+    noun === "review"
+      ? `${args.commenter} ${what} under your review of ${args.courseTitle}:`
+      : `${args.commenter} ${what} under your ${noun}, ${args.courseTitle}:`;
   const close = args.isQuestion
-    ? "Your answer is public, so it helps everyone who reads the review after them."
+    ? `Your answer is public, so it helps everyone who reads the ${noun} after them.`
     : "";
   return {
     subject,

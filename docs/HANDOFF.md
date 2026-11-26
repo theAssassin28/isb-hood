@@ -1,6 +1,6 @@
 # ISB Hood: handoff
 
-State on 21 Nov 2026. Read this first, then `docs/BUILD_PLAN.md` for the full design.
+State on 26 Nov 2026. Read this first, then `docs/BUILD_PLAN.md` for the full design.
 
 ## What it is
 
@@ -8,16 +8,17 @@ ISB Hood passes on what one ISB batch has learned about courses and careers to t
 
 ## Where things stand
 
-| Area                                                                               | State                                           |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------- |
-| M0 to M5 (sign-in, reviews, course pages, questions, moderation, surveys, metrics) | Built and tested locally                        |
-| Clickable demo on sample data                                                      | Built and pushed; this is what is shown for now |
-| Supabase, Gmail sending, PostHog, Vercel                                           | **Not set up.** Not needed for the demo         |
-| M6 (harden and launch Test 1) and M7 (career entries)                              | Not started                                     |
+| Area                                                                               | State                                    |
+| ---------------------------------------------------------------------------------- | ---------------------------------------- |
+| M0 to M5 (sign-in, reviews, course pages, questions, moderation, surveys, metrics) | Built and tested locally                 |
+| M7, careers: track playbooks, company notes, "Like me", a pathway page per track   | Built and tested locally, on sample data |
+| Clickable demo on sample data                                                      | Built; this is what is shown for now     |
+| Supabase, Gmail sending, PostHog, Vercel                                           | **Not set up.** Not needed for the demo  |
+| M6 (harden and launch Test 1)                                                      | Not started                              |
 
 - **Repo:** https://github.com/theAssassin28/isb-hood (private; it contains Godly template assets and coursework). Branch `main`; CI runs on every push and is green as of commit `c49682f`.
-- **Checks:** lint, types, 217 tests and the production build pass.
-- **Not yet checked:** a click-through of the demo's forms in a real browser. The pages were checked by fetching them for each sample person. Before presenting, ask a question as Ravi, verify Dev as Nisha, and take the survey.
+- **Checks:** lint, types, 225 tests and the production build pass.
+- **Checked in the browser at phone width:** the career list and "Like me", a pathway page, an entry page, asking an author, and publishing a playbook and a company note (including the pay-figure warning). Not clicked through yet: verifying Dev as Nisha and taking the survey.
 
 ## Run the demo
 
@@ -36,31 +37,41 @@ Open http://localhost:3000.
 - **Switching and resetting:** the strip at the top says who you are and has **Switch persona** and **Reset**.
 - **Layouts and themes:** narrower than 1024px is the phone layout (bottom tab bar), wider is desktop; the sun/moon button switches light and dark.
 
-| Person             | What to show                                                                           |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| Ravi, PGP Co'27    | Reading reviews, asking a question, the post-bid survey (due for him), his own review  |
-| Meera, PGP YL      | The view for YL students                                                               |
-| Asha, Co'26 alum   | Writing a review under her name, answering a waiting question                          |
-| Kiran, Co'26 alum  | Answering anonymously; replies show as "Author"                                        |
-| Dev, Co'25 alum    | A contributor waiting for verification, so his review is held                          |
-| Nisha, moderator   | Verifying Dev, resolving flags, importing courses, the metrics page and its CSV export |
-| Rohan, new student | The first-time setup screens                                                           |
+| Person                                               | What to show                                                                                                      |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Ravi, PGP Co'27 (ex-consultant, BFSI, wants product) | Reading reviews and asking a question; careers with "Like me"; the post-bid survey after he opens a Term 7 course |
+| Meera, PGP YL                                        | The view for YL students; questions waiting on a review and a company note                                        |
+| Asha, Co'26 alum                                     | Writing a review, playbook or company note under her name; answering a waiting question                           |
+| Kiran, Co'26 alum                                    | Answering anonymously; replies show as "Author" (reviews and a finance playbook)                                  |
+| Dev, Co'25 alum                                      | Waiting for verification, so his review and marketing playbook are held                                           |
+| Nisha, moderator                                     | Verifying Dev, resolving flags, importing courses, the metrics page and its CSV export                            |
+| Rohan, new student                                   | The first-time setup screens                                                                                      |
 
 **Suggested script:**
 
-1. As Ravi, open Pricing Strategy. It shows the new-professor banner. Read a review and ask its author a question.
-2. Switch to Kiran and answer the question anonymously.
-3. As Asha, write a review.
-4. As Dev, write a review; it is held. Switch to Nisha, verify Dev, and the review is published. Then resolve a flag and open Metrics.
-5. As Rohan, go through onboarding.
-6. Reset the demo.
+1. As Ravi, open Pricing Strategy. It shows the new-professor banner. Read a review and ask its author a question. Go back Home: the post-bid survey prompt now appears, because he looked at a Term 7 course.
+2. Still as Ravi, open Careers. Open the Product pathway to see what three people did at each stage. Turn on "Like me": Farah, a risk consultant from BFSI like him, comes first. Ask her a question. (Arjun, the career pivoter persona, gets the same view for his finance and BFSI background.)
+3. Switch to Kiran and answer anonymously.
+4. As Asha, write a playbook or company note. Try a pay figure ("30 LPA") to show the warning.
+5. As Dev, write a review; it is held. Switch to Nisha, verify Dev: his review and his playbook go live. Then resolve a flag and open Metrics.
+6. As Rohan, go through onboarding.
+7. Reset the demo.
 
 **Demo limits:**
 
-- **Sample data:** it lives in `lib/demo/seed-data.ts` (8 courses, 17 reviews, question threads, 3 flags, background activity for the metrics). Edit it, then press Reset.
+- **Sample data:** courses, reviews and people are in `lib/demo/seed-data.ts` (8 courses, 17 reviews, question threads, 3 flags, background activity for the metrics). Careers are in `lib/demo/seed-careers.ts`: 11 playbooks and 8 company notes across all six tracks. Company names are real recruiters, but every word is made up. Edit either file, then press Reset.
 - **State:** changes made while clicking live in one server process and are lost on restart. Present from a laptop, not a serverless host.
 - **Services:** email, PostHog and the daily job do nothing in the demo.
 - **Never deploy demo mode with real people on it:** sign-in is a picker, so anyone could become the moderator.
+
+## How careers work
+
+- **Career list (`/careers`):** a tile per track, then every playbook and company note, with filters (kind, track, background, company) and "Like me".
+- **"Like me":** shows entries from people who had the reader's pre-MBA function or industry. Function matches come first, then the reader's target track (plan 6.3). Company notes match on the author's own background.
+- **Pathway page (`/careers/tracks/<track>`):** lines up every playbook for one track by stage: before ISB, early terms (1 to 3), mid terms (4 to 5), late terms (6 to 8), placement weeks. It also shows where people came from, the median applied, shortlists, interviews and offers, what mattered most, the latest safe start, and mistakes to avoid. Lines from people like the reader are tagged.
+- **Entry page (`/careers/<id>`):** the full playbook or note, with questions to the author, "Request a chat" (fake door) and flagging.
+- **Writing:** `/write/playbook` and `/write/company-note` have one page of questions, then a preview, then publish. Text that looks like pay or an offer amount gets a warning, and is flagged for moderators if published anyway.
+- **Logic:** `lib/domain/careers.ts` (matching, filters, pathway) and `lib/schemas/careerEntry.ts` (fields and rules).
 
 ## How the demo works
 
@@ -71,12 +82,13 @@ In demo mode, `createClient` (`lib/supabase/server.ts`) and `createAdminClient` 
 | File                                                           | Role                                                                                                |
 | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `lib/demo/seed-data.ts`                                        | The sample people, courses, reviews, comments, flags and outreach                                   |
+| `lib/demo/seed-careers.ts`                                     | The sample playbooks, company notes and their questions                                             |
 | `lib/demo/db.ts`                                               | The in-memory database. It copies the SQL views, access rules, triggers and functions in TypeScript |
 | `lib/demo/client.ts`                                           | The fake client: the query builder, joins, `rpc` and `auth`                                         |
 | `lib/demo/actions.ts`                                          | Signing in as a person, and Reset                                                                   |
 | `components/demo-banner.tsx`, `components/demo-personas.tsx`   | The strip and the person picker                                                                     |
 | `components/demo-start.tsx`, `components/demo-script-dock.tsx` | The sign-in persona panel and the "Demo script" button and panel                                    |
-| `tests/unit/demo.test.ts`                                      | Checks that the fake keeps anonymity, access, triggers and metrics right                            |
+| `tests/unit/demo.test.ts`, `tests/unit/career-entries.test.ts` | Check that the fake keeps anonymity, access, triggers and metrics right, and the career entry rules |
 
 When you change any SQL in `supabase/migrations/`, make the same change in `lib/demo/db.ts`. Otherwise the demo and the real app drift apart.
 
@@ -99,7 +111,7 @@ When you change any SQL in `supabase/migrations/`, make the same change in `lib/
    - performance and accessibility passes;
    - loading the real Term 7 courses;
    - a Playwright core-loop test, a `pg_dump` backup and the launch checklist in section 11.
-2. **M7, career entries:** playbooks, company notes, the "Like me" filter. Gated by `careers_write_open` and `careers_read_open`.
+2. **Careers in the real app:** the pages are built and gated by `careers_write_open` and `careers_read_open` (both off by default; the demo turns them on). Still to do: the daily digest email for career comments, autosave on the career forms, and a run against a real Supabase project.
 3. **Open questions** (plan section 13): when Term 7 courses are published, whether YL students bid on the same electives, whether faculty reviews need approval, and who moderates.
 
 ## Rules that are easy to break

@@ -39,10 +39,30 @@ type FlaggedReview = {
   };
 };
 
+type FlaggedCareerEntry = {
+  id: string;
+  status: string;
+  visibility: string;
+  type: "playbook" | "company_note";
+  company: string | null;
+  track: string | null;
+  body: Record<string, unknown>;
+  author: Person;
+};
+
+/** Every piece of free text in an entry body, for the moderator to read. */
+function bodyText(value: unknown): string[] {
+  if (typeof value === "string") return value.trim() ? [value] : [];
+  if (Array.isArray(value)) return [];
+  if (value && typeof value === "object") return Object.values(value).flatMap(bodyText);
+  return [];
+}
+
 type FlaggedComment = {
   id: string;
   status: string;
   body: string;
+  entry_type: "course_review" | "career_entry";
   entry_id: string;
   author: Person;
 };
@@ -90,8 +110,9 @@ async function loadQueue() {
   }
   const reviewIds = [...items.values()].filter((i) => i.type === "course_review").map((i) => i.id);
   const commentIds = [...items.values()].filter((i) => i.type === "comment").map((i) => i.id);
+  const careerIds = [...items.values()].filter((i) => i.type === "career_entry").map((i) => i.id);
 
-  const [reviewsResult, commentsResult] = await Promise.all([
+  const [reviewsResult, commentsResult, careersResult] = await Promise.all([
     reviewIds.length
       ? supabase
           .from("course_reviews")
@@ -106,11 +127,23 @@ async function loadQueue() {
     commentIds.length
       ? supabase
           .from("comments")
-          .select("id, status, body, entry_id, author:profiles(full_name, cohort, email)")
+          .select(
+            "id, status, body, entry_type, entry_id, author:profiles(full_name, cohort, email)",
+          )
           .in("id", commentIds)
           .returns<FlaggedComment[]>()
       : Promise.resolve({ data: [] as FlaggedComment[] }),
+    careerIds.length
+      ? supabase
+          .from("career_entries")
+          .select(
+            "id, status, visibility, type, company, track, body, author:profiles(full_name, cohort, email)",
+          )
+          .in("id", careerIds)
+          .returns<FlaggedCareerEntry[]>()
+      : Promise.resolve({ data: [] as FlaggedCareerEntry[] }),
   ]);
+  const careers = new Map((careersResult.data ?? []).map((e) => [e.id, e]));
   const reviews = new Map((reviewsResult.data ?? []).map((r) => [r.id, r]));
   const comments = new Map((commentsResult.data ?? []).map((c) => [c.id, c]));
 
@@ -131,6 +164,7 @@ async function loadQueue() {
     hours: Math.floor((now - new Date(item.flags[0].created_at).getTime()) / 3_600_000),
     review: item.type === "course_review" ? reviews.get(item.id) : undefined,
     comment: item.type === "comment" ? comments.get(item.id) : undefined,
+    career: item.type === "career_entry" ? careers.get(item.id) : undefined,
     commentCourseId:
       item.type === "comment" ? courseOf.get(comments.get(item.id)?.entry_id ?? "") : undefined,
   }));
@@ -151,15 +185,19 @@ async function Queue() {
   return (
     <ul className="space-y-4">
       {queue.map((item) => {
-        const { hours, review, comment } = item;
+        const { hours, review, comment, career } = item;
         const late = hours >= FLAG_LATE_HOURS;
         const reasons = [...new Set(item.flags.map((f) => f.reason))];
-        const author = review?.author ?? comment?.author ?? null;
+        const author = review?.author ?? comment?.author ?? career?.author ?? null;
         const contextHref = review
           ? `/courses/${review.offering.course.id}#review-${review.id}`
-          : comment && item.commentCourseId
-            ? `/courses/${item.commentCourseId}#review-${comment.entry_id}`
-            : null;
+          : item.type === "career_entry"
+            ? `/careers/${item.id}`
+            : comment?.entry_type === "career_entry"
+              ? `/careers/${comment.entry_id}#thread-${comment.id}`
+              : comment && item.commentCourseId
+                ? `/courses/${item.commentCourseId}#review-${comment.entry_id}`
+                : null;
 
         return (
           <li key={`${item.type}:${item.id}`} className={card}>
@@ -212,7 +250,20 @@ async function Queue() {
                 {comment.body}
               </p>
             ) : null}
-            {!review && !comment ? (
+            {career ? (
+              <div className="mt-3 rounded-md border border-border bg-background p-3 text-sm">
+                <p className="font-medium">
+                  {career.type === "playbook" ? "Playbook" : "Company note"}
+                  {career.company ? ` · ${career.company}` : ""}
+                </p>
+                {bodyText(career.body).map((text, i) => (
+                  <p key={i} className="mt-1 break-words whitespace-pre-line">
+                    {text}
+                  </p>
+                ))}
+              </div>
+            ) : null}
+            {!review && !comment && !career ? (
               <p className="mt-3 text-sm text-muted-foreground">
                 The item was deleted by its author.
               </p>
@@ -222,10 +273,12 @@ async function Queue() {
               <p className="mt-2 text-sm text-muted-foreground">
                 Written by {author.full_name ?? "unknown"}
                 {author.cohort ? `, ${author.cohort}` : ""} ({author.email})
-                {review?.visibility === "anonymous" ? " · shown to readers as anonymous" : ""}
+                {(review ?? career)?.visibility === "anonymous"
+                  ? " · shown to readers as anonymous"
+                  : ""}
               </p>
             ) : null}
-            {(review?.status ?? comment?.status) === "removed" ? (
+            {(review?.status ?? comment?.status ?? career?.status) === "removed" ? (
               <p className="mt-1 text-sm font-medium text-destructive">Already removed.</p>
             ) : null}
             {contextHref ? (
