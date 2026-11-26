@@ -32,8 +32,8 @@ export function ReviewBody({
   authorDisplay,
 }: {
   fields: ReviewFields;
-  offeringLabel: string;
-  authorDisplay: string;
+  offeringLabel?: string;
+  authorDisplay?: string;
 }) {
   const mix: MixPart[] = EVALUATION_COMPONENTS.filter((c) => (fields[c.value] ?? 0) > 0).map(
     (c) => ({ key: c.value, label: c.label, percent: fields[c.value] ?? 0 }),
@@ -41,10 +41,12 @@ export function ReviewBody({
 
   return (
     <article className="space-y-5">
-      <header>
-        <p className="font-semibold text-foreground">{offeringLabel}</p>
-        <p className="text-sm text-muted-foreground">{authorDisplay}</p>
-      </header>
+      {offeringLabel && authorDisplay ? (
+        <header>
+          <p className="font-semibold text-foreground">{offeringLabel}</p>
+          <p className="text-sm text-muted-foreground">{authorDisplay}</p>
+        </header>
+      ) : null}
 
       <dl className="grid grid-cols-2 gap-x-4 gap-y-4">
         <Stat

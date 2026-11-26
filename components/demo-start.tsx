@@ -106,7 +106,7 @@ export function DemoStartPanel() {
 }
 
 /**
- * The floating "Demo script" button and panel, for the signed-in persona
+ * The "Demo script" button and panel, for the signed-in persona
  * (prototype only, personas with a script only). Rendered by the app layout.
  */
 export async function DemoScriptDockForUser() {

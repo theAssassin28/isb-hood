@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { CoursePageSkeleton } from "@/components/skeleton";
-import { CoursePageView } from "@/components/course-page-view";
+import { CoursePageView, MIN_REVIEWS_FOR_PROFESSOR_SWITCH } from "@/components/course-page-view";
 import { CoursesClosedForYl } from "@/components/courses-closed";
 import { FakeDoor } from "@/components/fake-door";
 import { FlagButton } from "@/components/flag-button";
 import { ReviewThread } from "@/components/review-thread";
-import { notice, pageWide } from "@/components/styles";
+import { notice, shellWidth } from "@/components/styles";
 import { TrackOnMount } from "@/components/track-on-mount";
 import { safeCourseId } from "@/lib/auth/access";
 import { requireReader } from "@/lib/auth/session";
@@ -24,7 +24,7 @@ export const metadata: Metadata = { title: "Course · ISB Hood" };
 
 export default function CoursePage({ params, searchParams }: PageProps<"/courses/[courseId]">) {
   return (
-    <main className={pageWide}>
+    <main className={`${shellWidth} flex flex-1 flex-col pt-3 pb-12 lg:pt-8`}>
       <Suspense fallback={<CoursePageSkeleton />}>
         <Course params={params} searchParams={searchParams} />
       </Suspense>
@@ -48,14 +48,14 @@ async function Course({
   if (!coursesOpenTo(profile, settings)) return <CoursesClosedForYl />;
 
   // The URL names the course by its code (/courses/MKT-501). Older links use
-  // the id; they redirect to the code URL, keeping ?thread and ?prof.
+  // the id; they redirect to the code URL, keeping the review, thread and professor selection.
   const segment = decodeURIComponent(rawId);
   const asId = safeCourseId(segment);
   const ref = await findCourseRef(asId ? { id: asId } : { code: segment });
   if (!ref) notFound();
   if (segment !== ref.code) {
     const keep = new URLSearchParams();
-    for (const key of ["thread", "prof"] as const) {
+    for (const key of ["thread", "prof", "review"] as const) {
       const value = query[key];
       if (typeof value === "string") keep.set(key, value);
     }
@@ -74,14 +74,25 @@ async function Course({
     );
   }
 
-  const scope = query.prof === "current" && data.current ? "current" : "all";
+  const openThreadId = safeCourseId(query.thread);
+  const requestedReviewId = safeCourseId(query.review);
+  const scope =
+    query.prof === "current" &&
+    !openThreadId &&
+    !requestedReviewId &&
+    data.currentProfessorCount >= MIN_REVIEWS_FOR_PROFESSOR_SWITCH &&
+    data.currentProfessorCount < data.reviews.length
+      ? "current"
+      : "all";
   const { reviews, summary } = scopedReviews(data, scope);
   const comments = await listComments(
     "course_review",
     reviews.map((r) => r.id),
   );
   const threads = buildThreads(comments ?? []);
-  const openThreadId = safeCourseId(query.thread);
+  const threadReview = openThreadId
+    ? reviews.find((review) => threads.get(review.id)?.some((t) => t.question.id === openThreadId))
+    : undefined;
 
   return (
     <>
@@ -101,6 +112,7 @@ async function Course({
         totalCount={data.reviews.length}
         currentProfessorCount={data.currentProfessorCount}
         myReviewId={data.reviews.find((r) => r.is_mine)?.id ?? null}
+        openReviewId={threadReview?.id ?? requestedReviewId}
         afterReview={(review) => (
           <>
             {comments === null ? (

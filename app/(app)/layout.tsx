@@ -17,7 +17,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
-        <div className={`${shellWidth} flex min-h-16 items-center justify-between gap-4`}>
+        <div className={`${shellWidth} flex min-h-16 items-center justify-between gap-2 lg:gap-4`}>
           <Link href="/" className="type-heading inline-flex min-h-11 shrink-0 items-center">
             ISB Hood
           </Link>
@@ -25,6 +25,9 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
           <div className="flex shrink-0 items-center gap-1">
             <Suspense fallback={null}>
               <AccountMenu />
+            </Suspense>
+            <Suspense fallback={null}>
+              <DemoScriptDockForUser />
             </Suspense>
             <ThemeToggle />
           </div>
@@ -34,10 +37,6 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
       {/* Outside the header: its backdrop blur would pin a fixed bar to the header. */}
       <Suspense fallback={null}>
         <PhoneTabs />
-      </Suspense>
-      {/* Prototype only: the persona's demo script, on demand. */}
-      <Suspense fallback={null}>
-        <DemoScriptDockForUser />
       </Suspense>
     </>
   );

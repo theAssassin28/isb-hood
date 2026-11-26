@@ -115,12 +115,11 @@ describe("course page", () => {
     expect(render([live()], sameProf)).toContain("Based on 1 review.");
   });
 
-  it("with no reviews: the 'no reviews yet' banner, no summary, a way to write the first", () => {
+  it("with no reviews: the 'no reviews yet' message, no summary, one way to write the first", () => {
     const text = render([], sameProf);
     expect(text).toContain("No reviews yet");
-    expect(text).toContain("Took it? Write the first one.");
     expect(text).not.toContain("What reviewers say");
-    expect(text).toContain("Took this course? Add your review");
+    expect(text.match(/Add your review/g)).toHaveLength(1);
   });
 
   it("with a changed professor: the banner names both", () => {
@@ -131,7 +130,7 @@ describe("course page", () => {
     const text = render([live(), live(), live()], offerings);
     expect(text).toContain("New or changed course");
     expect(text).toContain(
-      "Reviews below are for Prof A (Term 7, Co'26). This term it is taught by Prof B",
+      "Reviews below are for Prof A (Term 7, Co'26). Workload and grading may differ with Prof B.",
     );
   });
 

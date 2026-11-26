@@ -190,13 +190,13 @@ async function Queue() {
         const reasons = [...new Set(item.flags.map((f) => f.reason))];
         const author = review?.author ?? comment?.author ?? career?.author ?? null;
         const contextHref = review
-          ? `/courses/${review.offering.course.id}#review-${review.id}`
+          ? `/courses/${review.offering.course.id}?review=${review.id}#review-${review.id}`
           : item.type === "career_entry"
             ? `/careers/${item.id}`
             : comment?.entry_type === "career_entry"
               ? `/careers/${comment.entry_id}#thread-${comment.id}`
               : comment && item.commentCourseId
-                ? `/courses/${item.commentCourseId}#review-${comment.entry_id}`
+                ? `/courses/${item.commentCourseId}?review=${comment.entry_id}#review-${comment.entry_id}`
                 : null;
 
         return (
